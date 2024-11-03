@@ -4,12 +4,28 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "backend": "nodemon index.js",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^1.7.7",
+    "bcrypt": "^5.1.1",
     "core-js": "^3.8.3",
-    "vue": "^3.2.13"
+    "cores": "^0.8.5",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
+    "mongodb": "^6.10.0",
+    "mongoose": "^8.7.3",
+    "mysql2": "^3.11.3",
+    "nodemon": "^3.1.7",
+    "openssl": "^2.0.0",
+    "uuid": "^11.0.0",
+    "vue": "^3.2.13",
+    "vue-router": "^4.4.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -35,8 +51,7 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {
-    }
+    "rules": {}
   },
   "browserslist": [
     "> 1%",
