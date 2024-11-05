@@ -18,7 +18,7 @@ export function isTokenValid() {
 
 export function refreshAccessToken(refreshToken) {
   return new Promise((resolve, reject) => {
-    axios.post('/api/refresh-token', { refreshToken })
+    axios.post('http://localhost:3000/api/refresh-token', { refreshToken })
       .then(response => {
         const { accessToken } = response.data;
         resolve(accessToken); // Resolve with the new access token

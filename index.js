@@ -35,7 +35,7 @@ const generateRefreshToken = (user) => {
   return refreshToken;
 };
 
-// Signup Endpoint
+// Signup route
 app.post('/api/signup', async (req, res) => {
   const { email, password } = req.body;
 
@@ -52,14 +52,28 @@ app.post('/api/signup', async (req, res) => {
       // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Insert new user
+      // Insert new user into users table
       db.query('INSERT INTO users (email, hashed_password) VALUES (?, ?)', [email, hashedPassword], (err, results) => {
         if (err) return res.status(500).json({ error: 'Failed to register user' });
 
-        const user = { id: results.insertId, email };
+        const userId = results.insertId;
 
-        // Send tokens in the response
-        res.status(201).json({ accessToken, refreshToken, message: 'User registered successfully!' });
+        // Insert default profile for the user into profiles table
+        const defaultProfile = { user_id: userId, avatar_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/64c9bda73ca89162bc806ea1e084a3cd2dccf15193fe0e3c0e8008a485352e26?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1', name: 'namee', belt: 'white', academy: 'unknown academy' };
+        db.query('INSERT INTO profiles SET ?', defaultProfile, (err) => {
+          if (err) return res.status(500).json({ error: 'Failed to create user profile' });
+
+          // Generate access and refresh tokens
+          const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+          const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
+
+          // Send tokens in the response
+          res.status(201).json({
+            accessToken,
+            refreshToken,
+            message: 'User registered successfully and default profile created!'
+          });
+        });
       });
     });
   } catch (error) {
@@ -112,6 +126,134 @@ app.post('/api/signout', (req, res) => {
   db.query('DELETE FROM refresh_tokens WHERE token = ?', [refreshToken], (err, results) => {
     if (err) return res.status(500).json({ error: 'Failed to sign out' });
     res.json({ message: 'signed out successfully' });
+  });
+});
+
+// Profile retrieve
+app.get('/api/profile', async (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Access token missing or invalid' });
+  }
+
+  const accessToken = authHeader.split(' ')[1];
+
+  try {
+    // Decode the token to extract the user_id
+    const decodedToken = jwt.verify(accessToken, process.env.JWT_SECRET);
+    const userId = decodedToken.userId;
+
+    // Retrieve profile information from profiles table
+    db.query('SELECT * FROM profiles WHERE user_id = ?', [userId], (err, results) => {
+      if (err) {
+        return res.status(500).json({ error: 'Database query error' });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'Profile not found' });
+      }
+
+      // Send profile data as a response
+      res.json(results[0]);
+    });
+  } catch (error) {
+    res.status(403).json({ error: 'Invalid or expired access token' });
+  }
+});
+
+// Add Video Sequence Endpoint
+app.post('/api/addpost', (req, res) => {
+  const {
+    id,
+    title,
+    video_url,
+    owner_id,
+    movement_type,
+    starting_position,
+    ending_position,
+    sequence_start_time,
+    public_status,
+    language,
+    notes
+  } = req.body;
+
+  const query = `
+    INSERT INTO posts (
+      id,
+      title,
+      video_url,
+      owner_id,
+      movement_type,
+      starting_position,
+      ending_position,
+      sequence_start_time,
+      public_status,
+      language,
+      notes
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.query(
+    query,
+    [
+      id,
+      title,
+      video_url,
+      owner_id,
+      movement_type,
+      starting_position,
+      ending_position,
+      sequence_start_time,
+      public_status,
+      language,
+      notes
+    ],
+    (err, results) => {
+      if (err) {
+        console.error('Error inserting video sequence:', err);
+        return res.status(500).json({ error: 'Failed to add a new post' });
+      }
+      res.status(201).json({ message: 'Added a new post successfully!' });
+    }
+  );
+});
+
+// Endpoint to fetch a post by ID
+app.get('/api/posts/:id', (req, res) => {
+  const postId = req.params.id;
+
+  const query = `
+    SELECT 
+      p.id,
+      p.title,
+      p.video_url,
+      p.movement_type,
+      p.starting_position,
+      p.ending_position,
+      p.sequence_start_time,
+      p.public_status,
+      p.language,
+      p.notes,
+      pr.avatar_url,
+      pr.name,
+      pr.belt
+    FROM posts p
+    JOIN profiles pr ON p.owner_id = pr.user_id
+    WHERE p.id = ?
+  `;
+
+  db.query(query, [postId], (err, results) => {
+    if (err) {
+      console.error('Error fetching post:', err);
+      return res.status(500).json({ error: 'Failed to fetch post' });
+    }
+    
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    res.status(200).json(results[0]); // Return the first result
   });
 });
 

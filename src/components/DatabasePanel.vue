@@ -96,21 +96,20 @@
                 placeholder="Search"
                 aria-label="Search"
               />
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/ceee35d297d4c0fe5453107e73e7fbb494e6164c747eb1afdb410a1be3052fd4?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-                class="object-contain shrink-0 self-stretch my-auto w-4 aspect-square"
-                alt=""
-              />
+
+              <button aria-label="Search">
+                <img
+                  loading="lazy"
+                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/ceee35d297d4c0fe5453107e73e7fbb494e6164c747eb1afdb410a1be3052fd4?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
+                  class="object-contain shrink-0 w-4 aspect-square"
+                  alt="Search icon"
+                />
+              </button>
             </div>
           </div>
-          <button type="submit" class="sr-only">Submit Search</button>
-          <img
-            loading="lazy"
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/a5f3b994123d631859e61cfed8cf5cf081e13390dff6f69b585f7484b1c38100?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-            class="object-contain shrink-0 self-stretch my-auto w-10 aspect-square"
-            alt=""
-          />
+          <router-link to="/newpage" aria-label="Create a new page">
+            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/a1a346bb6435f7307fd48c41414b143ec3e125a1e61bb152903251e3aecff500?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1" class="object-contain shrink-0 self-stretch my-auto w-10 aspect-square" alt="" />
+          </router-link>
         </form>
 
         <nav
@@ -146,6 +145,7 @@
           :postTime="post.postTime"
           :imageSrc="post.imageSrc"
           :avatarSrc="post.avatarSrc"
+          @click="goToViewPage(post.id)"
         />
       </section>
     </main>
@@ -153,17 +153,23 @@
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import PreviewCard from "./PreviewCard.vue";
 
 export default {
   components: {
     PreviewCard,
   },
-  data() {
-    return {
-      posts: [
+  setup() {
+    const posts = ref([]);
+    const router = useRouter();
+
+    onMounted(() => {
+      // Initialize or fetch posts here
+      posts.value = [
         {
-          key: "index",
+          id: "1",
           title: "AAA",
           videoId: "KxRkF5_dBlo",
           sequenceStartTime: "5:01",
@@ -172,7 +178,7 @@ export default {
             "https://cdn.builder.io/api/v1/image/assets/TEMP/c7fdd9b8e8cba9d4d04b56bc84a10a1d3ca20d5b41e8dd7993f83747a8e7f864?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1",
         },
         {
-          key: "index2",
+          id: "2",
           title: "AAAA",
           videoId: "KxRkF5_dBlo",
           sequenceStartTime: "5:01",
@@ -180,9 +186,17 @@ export default {
           avatarSrc:
             "https://cdn.builder.io/api/v1/image/assets/TEMP/c7fdd9b8e8cba9d4d04b56bc84a10a1d3ca20d5b41e8dd7993f83747a8e7f864?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1",
         },
-      ],
+      ];
+    });
+
+    const goToViewPage = (id) => {
+      router.push({ name: "ViewPage", params: { id } });
+    };
+
+    return {
+      posts,
+      goToViewPage,
     };
   },
 };
 </script>
-

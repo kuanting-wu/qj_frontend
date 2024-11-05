@@ -1,8 +1,18 @@
 <template>
   <article class="flex flex-col self-stretch p-4 my-auto bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px] w-[332px]">
-    <div class="flex relative justify-center items-start bg-neutral-100">
-      <img v-if="true" :src="`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`">
-      <img v-else :src="imageSrc" :alt="title" class="object-contain absolute z-0 shrink-0 self-start h-12 aspect-[0.98] bottom-[61px] left-[127px] right-[126px] w-[47px]" />
+    <div class="relative w-full aspect-w-16 aspect-h-9 bg-neutral-100 overflow-hidden rounded-lg">
+      <img
+        v-if="false"
+        :src="`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`"
+        alt="Video thumbnail"
+        class="absolute top-0 left-0 w-full h-full object-cover"
+      />
+      <img
+        v-else
+        :src="imageSrc"
+        :alt="title"
+        class="object-contain absolute z-0 shrink-0 self-start h-12 aspect-[0.98] bottom-[61px] left-[127px] right-[126px] w-[47px]"
+      />
     </div>
     <div class="flex gap-4 items-center mt-4 w-full">
       <img :src="avatarSrc" :alt="`${name}'s avatar`" class="object-contain shrink-0 self-stretch my-auto w-10 rounded-full aspect-square" />

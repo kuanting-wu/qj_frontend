@@ -1,0 +1,13 @@
+          <button class="flex overflow-hidden gap-2 justify-center items-center self-stretch p-2 my-auto leading-none bg-white rounded-lg border border-solid border-zinc-400 font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-brand-default)]">
+            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/057017f7dbfe75b1d43399f44e24c5bd044ebf2ce6d0122446d26ee8886b5fcb?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1" alt="" class="object-contain shrink-0 self-stretch my-auto w-4 aspect-square" />
+            <span class="self-stretch my-auto">0</span>
+          </button>
+          <button aria-label="Action 1">
+            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/acbf67aca969c4139c246afcd593a834cc483248230f763a5fdaec316c1cf917?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1" alt="" class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square" />
+          </button>
+          <button aria-label="Action 2">
+            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/2d842ba5f20161c5d394add2d4b2b5efe41e5b25c0ba850c14392c67973e8e9c?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1" alt="" class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square" />
+          </button>
+          <button aria-label="Action 3">
+            <img loading="lazy" src="https://cdn.builder.io/api/v1/image/assets/TEMP/62ec68088f17750b86b372f90f7d57d5ba91bb13331b2a55c348100b52ce1380?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1" alt="" class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square" />
+          </button>
