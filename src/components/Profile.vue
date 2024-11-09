@@ -31,61 +31,54 @@
         >
           {{ profile.academy }}
         </p>
-        <button class="flex gap-2.5 justify-center items-center mt-2 w-6">
+        <router-link
+          :to="editProfileLink"
+          class="flex gap-2.5 justify-center items-center mt-2 w-6"
+        >
           <img
             loading="lazy"
             src="https://cdn.builder.io/api/v1/image/assets/TEMP/0fe83109a8d51a4fd2a24605fbdfcc5d59311bc09d746dfd905a6fbbfb936d0a?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
             alt="Icon"
             class="object-contain self-stretch my-auto w-6 aspect-square"
           />
-        </button>
+        </router-link>
       </div>
     </div>
   </article>
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "axios";
 
 export default {
-  setup() {
+  props: ["userName"],
+  setup(props) {
     const profile = ref({
-      avatar_url:
-        "https://cdn.builder.io/api/v1/image/assets/TEMP/584d0499acd7e52bc516e3647b2e066542945995232e0bafc85aea114c723425?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1",
-      name: "Name",
-      belt: "Belt",
-      academy: "Academy",
+      avatar_url: "",
+      name: "test",
+      belt: "white",
+      academy: "qcgc",
     });
+
+    const editProfileLink = computed(() => `/editprofile/${props.userName}`);
 
     const fetchProfile = async () => {
       try {
-        const token = localStorage.getItem("accessToken"); // Retrieve token from storage
-        if (!token) {
-          throw new Error("No access token found");
-        }
-
-        const response = await axios.get("http://localhost:3000/api/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+        const response = await axios.get(
+          `http://localhost:3000/api/profile/${props.userName}`
+        );
         profile.value = response.data;
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Error fetching profile data:", error);
       }
     };
-
     onMounted(fetchProfile);
 
     return {
+      editProfileLink,
       profile,
     };
   },
 };
 </script>
-
-<style scoped>
-/* Add any necessary styling */
-</style>

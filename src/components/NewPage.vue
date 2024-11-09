@@ -5,7 +5,10 @@
     <section
       class="flex flex-wrap gap-8 text-[color:var(--sds-color-text-default-default)] max-md:max-w-full"
     >
-      <form @submit.prevent="submitForm" class="flex flex-col min-w-[300px] w-[300px]">
+      <form
+        @submit.prevent="submitForm"
+        class="flex flex-col min-w-[300px] w-[300px]"
+      >
         <div class="flex flex-col mt-2 w-full">
           <label for="title">Title</label>
           <input
@@ -22,6 +25,7 @@
           <textarea
             id="videoUrl"
             v-model="formData.video_url"
+            @input="extractVideoId"
             required
             class="overflow-hidden flex-1 shrink px-4 py-3 mt-1 w-full leading-tight whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 min-h-[80px] min-w-[240px]"
             placeholder="Enter video URL"
@@ -135,41 +139,54 @@
 <script>
 import { ref, watch, onMounted } from "vue";
 import axios from "axios";
-import { nanoid } from 'nanoid'; // Import nanoid
-import { useRouter } from 'vue-router'; // Import useRouter
+import { nanoid } from "nanoid"; // Import nanoid
+import { useRouter } from "vue-router"; // Import useRouter
 
 export default {
   setup() {
     const router = useRouter(); // Initialize the router
     const formattedTime = ref("");
     const formData = ref({
-      id: nanoid(16), // Generate a new 16-character ID
-      owner_id: null, // Initialize as null
+      id: nanoid(16), // Generate a new 16-character ID for the post
       title: "",
-      video_url: "",
+      video_id: "",
+      video_platform: "",
       movement_type: "",
       starting_position: "",
       ending_position: "",
       sequence_start_time: "",
       public_status: "public",
       language: "en",
-      notes: ""
+      notes: "",
     });
 
-    // Function to fetch profile and set owner_id
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem("accessToken"); // Retrieve token from storage
-        const response = await axios.get("http://localhost:3000/api/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        formData.value.owner_id = response.data.user_id; // Set owner_id from the profile
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        alert("Failed to retrieve user profile.");
+    // Function to extract video ID based on platform
+    const extractVideoId = () => {
+      const url = videoUrl.value;
+
+      // Check for YouTube video ID
+      const youtubeMatch = url.match(
+        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+      );
+      if (youtubeMatch) {
+        formData.value.video_id = youtubeMatch[1];
+        formData.value.video_platform = "YouTube";
+        return;
       }
+
+      // Check for Bilibili video ID
+      const bilibiliMatch = url.match(
+        /(?:https?:\/\/)?(?:www\.)?bilibili\.com\/video\/(BV[0-9A-Za-z]+|av\d+)/
+      );
+      if (bilibiliMatch) {
+        formData.value.video_id = bilibiliMatch[1];
+        formData.value.video_platform = "Bilibili";
+        return;
+      }
+
+      // Clear fields if the URL doesn't match
+      formData.value.video_id = "";
+      formData.value.video_platform = "";
     };
 
     // Function to format time input
@@ -188,7 +205,18 @@ export default {
 
     const submitForm = async () => {
       try {
-        const response = await axios.post("http://localhost:3000/api/addpost", formData.value);
+        const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from localStorage
+
+        const response = await axios.post(
+          `http://localhost:3000/api/newpost/${formData.value.id}`, // Include the post ID in the URL
+          formData.value,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Pass access token in Authorization header
+            },
+          }
+        );
+
         alert(response.data.message);
         // Navigate to the view page for the new post
         router.push(`/view/${formData.value.id}`);
@@ -198,18 +226,15 @@ export default {
       }
     };
 
-    // Fetch profile data on component mount
-    onMounted(fetchProfile);
-
     return {
       formattedTime,
       formData,
-      submitForm
+      submitForm,
+      extractVideoId,
     };
-  }
+  },
 };
 </script>
-
 
 <style scoped>
 .visually-hidden {

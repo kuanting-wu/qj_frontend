@@ -4,8 +4,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Welcome from '../components/Welcome.vue'
 import SignIn from '../components/SignIn.vue'
 import SignUp from '../components/SignUp.vue'
-import DatabasePanel from '../components/DatabasePanel.vue'
-import ProfileCard from '../components/ProfileCard.vue'
+import Database from '../components/Database.vue'
+import Profile from '../components/Profile.vue'
+import EditProfile from '../components/EditProfile.vue'
 import NewPage from '../components/NewPage.vue'
 import EditPage from '../components/EditPage.vue'
 import ViewPage from '../components/ViewPage.vue';
@@ -16,10 +17,11 @@ const routes = [
   { path: '/', name: 'Welcome', component: Welcome },
   { path: '/signin', name: 'SignIn', component: SignIn },
   { path: '/signup', name: 'SignUp', component: SignUp },
-  { path: '/database', name: 'DatabasePanel', component: DatabasePanel, meta: { requiresAuth: true } },
-  { path: '/profile', name: 'ProfileCard', component: ProfileCard, meta: { requiresAuth: true } },
-  { path: '/newpage', name: 'NewPage', component: NewPage, meta: { requiresAuth: true } },
-  { path: '/editpage', name: 'EditPage', component: EditPage, meta: { requiresAuth: true } },
+  { path: '/database', name: 'Database', component: Database, meta: { requiresAuth: true } },
+  { path: '/profile/:userName', name: 'Profile', component: Profile, props: true, meta: { requiresAuth: true } },
+  { path: '/editprofile/:userName', name: 'EditProfile', component: EditProfile, props: true, meta: { requiresAuth: true } },
+  { path: '/new', name: 'NewPage', component: NewPage, meta: { requiresAuth: true } },
+  { path: '/edit/:postId', name: 'EditPage', component: EditPage, props: true, meta: { requiresAuth: true } },
   { path: '/view/:postId', name: 'ViewPage', component: ViewPage, props: true, meta: { requiresAuth: false } }
 ]
 
@@ -36,21 +38,20 @@ router.beforeEach(async (to, from, next) => {
   // Function to handle redirection after token refresh
   const proceedAfterRefresh = (newAccessToken) => {
     localStorage.setItem('accessToken', newAccessToken);
+    console.log("accessToken refreshed")
     next();
   };
 
   // Check if the route requires authentication
   if (to.meta.requiresAuth) {
     if (accessToken && isTokenValid(accessToken)) {
-      // If accessToken is valid, proceed
       next();
     } else if (refreshToken) {
       try {
-        // If accessToken is missing/invalid and refreshToken exists, attempt to refresh the token
         const newAccessToken = await refreshAccessToken(refreshToken);
         proceedAfterRefresh(newAccessToken);
       } catch (error) {
-        // If refreshing fails, redirect to SignIn
+        console.log("failed to refresh token", error)
         next({ name: 'SignIn', query: { redirect: to.fullPath } });
       }
     } else {

@@ -17,7 +17,20 @@
           placeholder="Enter your email"
         />
       </div>
-      <div class="flex flex-col mt-6 w-full whitespace-nowrap font-[number:var(--sds-typography-body-font-weight-regular)] text-[length:var(--sds-typography-body-size-medium)]">
+            <div class="flex flex-col mt-6 w-full whitespace-nowrap font-[number:var(--sds-typography-body-font-weight-regular)] text-[length:var(--sds-typography-body-size-medium)]">
+        <label for="username" class="leading-snug text-[color:var(--sds-color-text-default-default)]">
+          User Name
+        </label>
+        <input
+          type="username"
+          v-model="username"
+          required
+          id="username"
+          class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-2 w-full leading-none bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px] text-[color:var(--sds-color-text-default-tertiary)]"
+          placeholder="Enter your password"
+        />
+      </div>
+            <div class="flex flex-col mt-6 w-full whitespace-nowrap font-[number:var(--sds-typography-body-font-weight-regular)] text-[length:var(--sds-typography-body-size-medium)]">
         <label for="password" class="leading-snug text-[color:var(--sds-color-text-default-default)]">
           Password
         </label>
@@ -26,6 +39,19 @@
           v-model="password"
           required
           id="password"
+          class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-2 w-full leading-none bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px] text-[color:var(--sds-color-text-default-tertiary)]"
+          placeholder="Enter your password"
+        />
+      </div>
+      <div class="flex flex-col mt-6 w-full whitespace-nowrap font-[number:var(--sds-typography-body-font-weight-regular)] text-[length:var(--sds-typography-body-size-medium)]">
+        <label for="passwordcheck" class="leading-snug text-[color:var(--sds-color-text-default-default)]">
+          Type the password again
+        </label>
+        <input
+          type="pssswordcheck"
+          v-model="passwordckeck"
+          required
+          id="passwordcheck"
           class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-2 w-full leading-none bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px] text-[color:var(--sds-color-text-default-tertiary)]"
           placeholder="Enter your password"
         />
@@ -64,7 +90,9 @@ export default {
     const router = useRouter()
 
     const email = ref('')
+    const username = ref('')
     const password = ref('')
+    const passwordcheck = ref('')
     const terms = ref(false)
 
     const handleSignUp = async () => {
@@ -75,6 +103,7 @@ export default {
 
       try {
         const response = await axios.post('http://localhost:3000/api/signup', {
+          name: username.value,
           email: email.value,
           password: password.value,
         })
@@ -97,7 +126,9 @@ export default {
 
     return {
       email,
+      username,
       password,
+      passwordcheck,
       terms,
       handleSignUp,
       alreadyHaveAnAccount,
