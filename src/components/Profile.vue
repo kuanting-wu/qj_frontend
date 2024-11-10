@@ -32,6 +32,7 @@
           {{ profile.academy }}
         </p>
         <router-link
+          v-if="props.userName === currentUser"
           :to="editProfileLink"
           class="flex gap-2.5 justify-center items-center mt-2 w-6"
         >
@@ -48,8 +49,10 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch} from "vue";
 import axios from "axios";
+import { getUserFromToken } from "../utils/auth";
+import { BACKEND_URL } from "../utils/config"
 
 export default {
   props: ["userName"],
@@ -62,11 +65,12 @@ export default {
     });
 
     const editProfileLink = computed(() => `/editprofile/${props.userName}`);
+    const currentUser = getUserFromToken() || "";
 
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/profile/${props.userName}`
+          `${BACKEND_URL}/api/profile/${props.userName}`
         );
         profile.value = response.data;
       } catch (error) {
@@ -75,9 +79,20 @@ export default {
     };
     onMounted(fetchProfile);
 
+    watch(
+      () => props.userName,
+      (newUserName) => {
+        if (newUserName) {
+          fetchProfile();
+        }
+      }
+    );
+
     return {
       editProfileLink,
       profile,
+      currentUser,
+      props,
     };
   },
 };

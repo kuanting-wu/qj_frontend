@@ -4,12 +4,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Welcome from '../components/Welcome.vue'
 import SignIn from '../components/SignIn.vue'
 import SignUp from '../components/SignUp.vue'
+import Documents from '../components/Documents.vue'
 import Database from '../components/Database.vue'
 import Profile from '../components/Profile.vue'
 import EditProfile from '../components/EditProfile.vue'
 import NewPage from '../components/NewPage.vue'
 import EditPage from '../components/EditPage.vue'
-import ViewPage from '../components/ViewPage.vue';
+import ViewPage from '../components/ViewPage.vue'
 import { isTokenValid } from '../utils/auth'
 import { refreshAccessToken } from '../utils/auth'
 
@@ -17,6 +18,7 @@ const routes = [
   { path: '/', name: 'Welcome', component: Welcome },
   { path: '/signin', name: 'SignIn', component: SignIn },
   { path: '/signup', name: 'SignUp', component: SignUp },
+  { path: '/docs', name: 'Documents', component: Documents },
   { path: '/database', name: 'Database', component: Database, meta: { requiresAuth: true } },
   { path: '/profile/:userName', name: 'Profile', component: Profile, props: true, meta: { requiresAuth: true } },
   { path: '/editprofile/:userName', name: 'EditProfile', component: EditProfile, props: true, meta: { requiresAuth: true } },

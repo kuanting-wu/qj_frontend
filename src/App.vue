@@ -20,32 +20,17 @@
         class="flex justify-end flex-wrap flex-1 shrink gap-2 items-center self-stretch my-auto leading-none whitespace-nowrap basis-0 font-[number:var(--sds-typography-body-font-weight-regular)] min-w-[240px] text-[length:var(--sds-typography-body-size-medium)] max-md:max-w-full"
       >
         <router-link
+          to="/docs"
+          class="gap-2 self-stretch p-2 my-auto rounded-lg text-[color:var(--sds-color-text-brand-on-brand-secondary)]"
+        >
+          Documents
+        </router-link>
+        <router-link
           to="/database"
           class="gap-2 self-stretch p-2 my-auto rounded-lg text-[color:var(--sds-color-text-brand-on-brand-secondary)]"
         >
           Database
         </router-link>
-
-        <form
-          class="flex gap-2 items-center self-stretch px-4 py-2 my-auto bg-white rounded-full border border-solid border-zinc-300 min-h-[40px] text-[color:var(--sds-color-text-default-default)] w-[239px]"
-        >
-          <label for="search" class="sr-only">Search</label>
-          <input
-            type="text"
-            id="search"
-            class="flex-1 shrink self-stretch my-auto basis-0 bg-transparent border-none outline-none"
-            placeholder="Search"
-          />
-          <button type="submit" aria-label="Submit search">
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/6a84d58b5b4d8ca5193fbdf5fb619cb016e069b7371bc4fa40ef7d5941ac53b1?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              class="object-contain shrink-0 self-stretch my-auto aspect-square w-[25px]"
-              alt=""
-            />
-          </button>
-        </form>
-
         <router-link to="/new" aria-label="Create a new page">
           <img
             loading="lazy"

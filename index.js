@@ -1,4 +1,5 @@
 const express = require('express');
+const axios = require('axios');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
@@ -219,7 +220,6 @@ app.put('/api/editprofile/:user_name', authenticateToken, async (req, res) => {
   }
 });
 
-
 // Add Video Sequence Endpoint
 app.post('/api/newpost/:id', authenticateToken, (req, res) => {
   const {
@@ -280,7 +280,6 @@ app.post('/api/newpost/:id', authenticateToken, (req, res) => {
     }
   );
 });
-
 
 app.put('/api/editpost/:id', authenticateToken, (req, res) => {
   const postId = req.params.id;
@@ -366,7 +365,6 @@ app.put('/api/editpost/:id', authenticateToken, (req, res) => {
   });
 });
 
-
 // Endpoint to fetch a post by ID
 app.get('/api/viewpost/:id', (req, res) => {
   const postId = req.params.id;
@@ -407,22 +405,24 @@ app.get('/api/viewpost/:id', (req, res) => {
   });
 });
 
-app.get('/api/search', (req, res) => {
+app.get('/api/search', authenticateToken, (req, res) => {
   const {
     search = '',
     postBy = '',
     movementType = '',
     startingPosition = '',
     endingPosition = '',
-    public_status = '',
+    publicStatus = '',
     language = '',
     sortOption = 'newToOld',
   } = req.query;
-
-  // Define sort order based on sortOption
+  console.log(publicStatus);
   const sortOrder = sortOption === 'oldToNew' ? 'ASC' : 'DESC';
 
-  // SQL Query with flexible filtering
+  // Check if a user is authenticated; if yes, get their username
+  const currentUser = req.user ? req.user.user_name : null;
+  console.log(currentUser);
+  // SQL Query with conditional private post access
   const query = `
     SELECT 
       p.id,
@@ -443,8 +443,17 @@ app.get('/api/search', (req, res) => {
       AND (LOWER(p.movement_type) LIKE LOWER(?) OR ? = '')
       AND (LOWER(p.starting_position) LIKE LOWER(?) OR ? = '')
       AND (LOWER(p.ending_position) LIKE LOWER(?) OR ? = '')
-      AND (LOWER(p.public_status) LIKE LOWER(?) OR ? = '')
       AND (LOWER(p.language) LIKE LOWER(?) OR ? = '')
+      AND (
+        -- Case 1: public_status is empty, show all public posts and private posts if owned by currentUser
+        (? = '' AND (LOWER(p.public_status) = 'public' OR (LOWER(p.public_status) = 'private' AND pr.user_name = ?)))
+        OR
+        -- Case 2: public_status is 'public', show only public posts
+        (? = 'Public' AND LOWER(p.public_status) = 'public')
+        OR
+        -- Case 3: public_status is 'private', show only private posts if owned by currentUser
+        (? = 'Private' AND LOWER(p.public_status) = 'private' AND pr.user_name = ?)
+      )
     ORDER BY p.created_at ${sortOrder}
   `;
 
@@ -455,8 +464,10 @@ app.get('/api/search', (req, res) => {
     `%${movementType}%`, movementType,
     `%${startingPosition}%`, startingPosition,
     `%${endingPosition}%`, endingPosition,
-    `%${public_status}%`, public_status,
     `%${language}%`, language,
+    publicStatus, currentUser,  // Case 1: public or private posts if owned by currentUser
+    publicStatus,               // Case 2: public posts only
+    publicStatus, currentUser    // Case 3: private posts if owned by currentUser
   ];
 
   // Execute the query
@@ -485,6 +496,31 @@ app.get('/api/search', (req, res) => {
   });
 });
 
+app.get('/proxy-image', async (req, res) => {
+  const { bvid } = req.query;
+
+  if (!bvid) {
+    return res.status(400).json({ error: 'bvid query parameter is required' });
+  }
+
+  try {
+    // Fetch the Bilibili video data using the bvid
+    const bilibiliResponse = await axios.get(`https://api.bilibili.com/x/web-interface/view?bvid=${bvid}`);
+
+    // Extract the thumbnail URL
+    const thumbnailUrl = bilibiliResponse.data.data.pic;
+
+    // Fetch the image data from the thumbnail URL
+    const imageResponse = await axios.get(thumbnailUrl, { responseType: 'arraybuffer' });
+
+    // Set content type and send the image data as the response
+    res.set('Content-Type', 'image/jpeg');
+    res.send(imageResponse.data);
+  } catch (error) {
+    console.error('Error fetching Bilibili thumbnail:', error);
+    res.status(500).json({ error: 'Failed to fetch thumbnail from Bilibili' });
+  }
+});
 
 // Start the server
 app.listen(PORT, () => {

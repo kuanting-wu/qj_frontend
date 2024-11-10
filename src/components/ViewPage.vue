@@ -39,6 +39,7 @@
             {{ post.title || "Title Unavailable" }}
           </h1>
           <router-link
+            v-if="post.user_name === currentUser"
             :to="editPageLink"
             class="flex gap-2.5 justify-center items-center self-stretch my-auto w-6"
             aria-label="More options"
@@ -51,31 +52,71 @@
             />
           </router-link>
         </header>
-        <router-link
-          :to="profileLink"
-          class="flex gap-4 items-center mt-4 w-full whitespace-nowrap text-[length:var(--sds-typography-body-size-medium)]"
-        >
-          <div
-            class="flex gap-3 items-start self-stretch my-auto leading-snug w-[139px]"
+        <div class="flex items-center gap-4">
+          <router-link
+            :to="profileLink"
+            class="flex gap-4 items-center mt-4 w-full whitespace-nowrap text-[length:var(--sds-typography-body-size-medium)]"
           >
-            <img
-              :src="post.avatar_url"
-              alt="User avatar"
-              class="object-contain shrink-0 w-10 rounded-full aspect-square"
-            />
             <div
-              class="flex flex-col flex-1 shrink justify-between basis-0 min-h-[46px]"
+              class="flex gap-3 items-start self-stretch my-auto leading-snug w-[139px]"
             >
-              <div class="font-semibold text-gray-600">
-                {{ post.name || "Anonymous" }}
-              </div>
-              <div class="text-gray-500">
-                {{ post.belt || "No rank" }}
+              <img
+                :src="post.avatar_url"
+                alt="User avatar"
+                class="object-contain shrink-0 w-10 rounded-full aspect-square"
+              />
+              <div
+                class="flex flex-col flex-1 shrink justify-between basis-0 min-h-[46px]"
+              >
+                <div class="font-semibold text-gray-600">
+                  {{ post.name || "Anonymous" }}
+                </div>
+                <div class="text-gray-500">
+                  {{ post.belt || "No rank" }}
+                </div>
               </div>
             </div>
-          </div>
-        </router-link>
+          </router-link>
+          <!--
+          <button
+            class="flex overflow-hidden gap-2 justify-center items-center self-stretch p-2 my-auto leading-none bg-white rounded-lg border border-solid border-zinc-400 font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-brand-default)]"
+          >
+            <img
+              loading="lazy"
+              src="https://cdn.builder.io/api/v1/image/assets/TEMP/057017f7dbfe75b1d43399f44e24c5bd044ebf2ce6d0122446d26ee8886b5fcb?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
+              alt=""
+              class="object-contain shrink-0 self-stretch my-auto w-4 aspect-square"
+            />
+            <span class="self-stretch my-auto">0</span>
+          </button>
 
+          <button aria-label="Action 1">
+            <img
+              loading="lazy"
+              src="https://cdn.builder.io/api/v1/image/assets/TEMP/acbf67aca969c4139c246afcd593a834cc483248230f763a5fdaec316c1cf917?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
+              alt=""
+              class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
+            />
+          </button>
+
+          <button aria-label="Action 2">
+            <img
+              loading="lazy"
+              src="https://cdn.builder.io/api/v1/image/assets/TEMP/2d842ba5f20161c5d394add2d4b2b5efe41e5b25c0ba850c14392c67973e8e9c?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
+              alt=""
+              class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
+            />
+          </button>
+          <button aria-label="Action 3">
+            <img
+              loading="lazy"
+              src="https://cdn.builder.io/api/v1/image/assets/TEMP/62ec68088f17750b86b372f90f7d57d5ba91bb13331b2a55c348100b52ce1380?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
+              alt=""
+              class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
+            />
+          </button>
+                    -->
+        </div>
         <!-- Post details section -->
         <div
           class="flex flex-col mt-4 w-full leading-snug text-black bg-white text-[length:var(--sds-typography-body-size-medium)]"
@@ -165,7 +206,7 @@
       </ul>
     </section>
 
-    <!-- Comments section -->
+    <!--    Comments section 
     <section
       class="flex flex-col py-8 mt-6 w-full leading-snug bg-white text-[length:var(--sds-typography-body-size-medium)] max-md:max-w-full"
     >
@@ -177,7 +218,7 @@
       <article
         class="flex flex-wrap gap-2 items-start py-2 mt-4 w-full rounded-lg min-w-[240px] max-md:max-w-full"
       >
-        <!-- Static sample comment - replace with dynamic comments if needed -->
+         Static sample comment - replace with dynamic comments if needed 
         <img
           loading="lazy"
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/627b91dced9c8426bf48fc2d969a954670a66ff70203371f9ab4ba516f040d25?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
@@ -195,12 +236,15 @@
         </div>
       </article>
     </section>
+-->
   </main>
 </template>
 
 <script>
 import axios from "axios";
 import { ref, onMounted, watch, computed } from "vue";
+import { getUserFromToken } from "../utils/auth";
+import { BACKEND_URL } from "../utils/config";
 
 export default {
   name: "PostDetail",
@@ -226,11 +270,12 @@ export default {
 
     const profileLink = computed(() => `/profile/${post.value.user_name}`);
     const editPageLink = computed(() => `/edit/${props.postId}`);
+    const currentUser = getUserFromToken();
 
     const fetchPostData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/viewpost/${props.postId}`
+          `${BACKEND_URL}/api/viewpost/${props.postId}`
         );
         post.value = response.data;
       } catch (error) {
@@ -250,7 +295,7 @@ export default {
       if (platform === "YouTube") {
         return `https://www.youtube.com/embed/${videoId}?start=${startSeconds}&rel=0`;
       } else if (platform === "Bilibili") {
-        return `https://player.bilibili.com/player.html?bvid=${videoId}&t=${startSeconds}`;
+        return `https://player.bilibili.com/player.html?bvid=${videoId}&t=${startSeconds}&no_related=1`;
       }
       return "";
     };
@@ -290,6 +335,7 @@ export default {
       editPageLink,
       parsedNotes,
       seekToTimestamp,
+      currentUser,
     };
   },
 };

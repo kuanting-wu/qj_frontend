@@ -206,6 +206,7 @@
 import { ref, watch } from "vue";
 import axios from "axios";
 import PreviewCard from "./PreviewCard.vue";
+import { BACKEND_URL } from "../utils/config"
 
 export default {
   components: {
@@ -234,10 +235,16 @@ export default {
 
     const fetchPosts = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3000/api/search", {
-          params: formData.value,
+        const token = localStorage.getItem("accessToken"); // Assume token is stored in local storage
+
+        const { data } = await axios.get(`${BACKEND_URL}/api/search`, {
+          params: formData.value, // Pass query params as required by backend
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach token for authentication
+          },
         });
-        posts.value = data.posts; // Update posts data
+
+        posts.value = data.posts; // Update posts data with response
         console.log("Fetched posts:", data.posts);
       } catch (error) {
         console.error("Error fetching posts:", error);

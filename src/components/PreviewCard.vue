@@ -51,6 +51,7 @@
 <script>
 import { computed, ref, onMounted } from "vue";
 import axios from "axios";
+import { BACKEND_URL } from "../utils/config"
 
 export default {
   name: "PreviewCard",
@@ -83,13 +84,24 @@ export default {
     // Ref to store the Bilibili thumbnail URL
     const bilibiliThumbnail = ref("");
 
-    // Function to fetch Bilibili thumbnail
     const getThumbnail = async () => {
       try {
-        const response = await axios.get(`https://api.bilibili.com/x/web-interface/view?bvid=${videoId}`);
-        bilibiliThumbnail.value = response.data.data.pic;
+        const response = await fetch(
+          `${BACKEND_URL}/proxy-image?bvid=${props.videoId}`
+        );
+        console.log("Response data:", response.data);
+
+        if (response.ok) {
+          const blob = await response.blob();
+          bilibiliThumbnail.value = URL.createObjectURL(blob);
+        } else {
+          console.error("Error fetching the thumbnail:", response.statusText);
+        }
       } catch (error) {
-        console.error("Error fetching Bilibili thumbnail:", error);
+        console.error(
+          "Error fetching Bilibili thumbnail through proxy:",
+          error
+        );
       }
     };
 

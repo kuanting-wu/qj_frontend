@@ -139,7 +139,8 @@
 <script>
 import { ref, watch, onMounted } from "vue";
 import axios from "axios";
-import { useRouter } from "vue-router"; // Import useRouter
+import { useRouter } from "vue-router";
+import { BACKEND_URL } from "../utils/config"
 
 export default {
   props: ["postId"], // Define props to receive postId
@@ -162,7 +163,7 @@ export default {
     const fetchPostData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/posts/${props.postId}`
+          `${BACKEND_URL}/api/posts/${props.postId}`
         );
         formData.value = response.data;
       } catch (error) {
@@ -218,7 +219,7 @@ export default {
         const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from localStorage
 
         const response = await axios.put(
-          `http://localhost:3000/api/editpost/${props.postId}`, // Corrected template string
+          `${BACKEND_URL}/api/editpost/${props.postId}`, // Corrected template string
           formData.value,
           {
             headers: {

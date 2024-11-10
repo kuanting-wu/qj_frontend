@@ -49,6 +49,7 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router'; // Import useRoute
 import axios from 'axios';
+import { BACKEND_URL } from "../utils/config"
 
 export default {
   setup() {
@@ -60,7 +61,7 @@ export default {
 
     const handleSignIn = async () => {
       try {
-        const response = await axios.post('http://localhost:3000/api/signin', {
+        const response = await axios.post(`${BACKEND_URL}/api/signin`, {
           email: email.value,
           password: password.value,
         });

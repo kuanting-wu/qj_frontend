@@ -60,6 +60,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router"; // Import useRouter
 import axios from "axios";
+import { BACKEND_URL } from "../utils/config";
 
 export default {
   props: ["userName"],
@@ -75,7 +76,7 @@ export default {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/profile/${props.userName}`
+          `${BACKEND_URL}/api/profile/${props.userName}`
         );
         profile.value = response.data;
       } catch (error) {
@@ -87,7 +88,7 @@ export default {
       try {
         const accessToken = localStorage.getItem("accessToken");
         await axios.put(
-          `http://localhost:3000/api/editprofile/${props.userName}`,
+          `${BACKEND_URL}/api/editprofile/${props.userName}`,
           profile.value,
           {
             headers: {

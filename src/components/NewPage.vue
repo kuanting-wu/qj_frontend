@@ -139,8 +139,9 @@
 <script>
 import { ref, watch, onMounted } from "vue";
 import axios from "axios";
-import { nanoid } from "nanoid"; // Import nanoid
-import { useRouter } from "vue-router"; // Import useRouter
+import { nanoid } from "nanoid"; 
+import { useRouter } from "vue-router";
+import { BACKEND_URL } from "../utils/config" 
 
 export default {
   setup() {
@@ -208,7 +209,7 @@ export default {
         const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from localStorage
 
         const response = await axios.post(
-          `http://localhost:3000/api/newpost/${formData.value.id}`, // Include the post ID in the URL
+          `${BACKEND_URL}/api/newpost/${formData.value.id}`, // Include the post ID in the URL
           formData.value,
           {
             headers: {
