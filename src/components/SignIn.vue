@@ -1,11 +1,21 @@
 <template>
-  <main class="flex flex-col justify-center items-center px-6 py-40 bg-neutral-100 max-md:px-5 max-md:py-24">
-    <h1 class="max-w-full tracking-tighter leading-tight text-center font-[number:var(--sds-typography-title-hero-font-weight)] text-[color:var(--sds-color-text-brand-on-brand-tertiary)] text-6xl w-[226px] max-md:text-4xl">
+  <main
+    class="flex flex-col justify-center items-center px-6 py-40 bg-neutral-100 max-md:px-5 max-md:py-24"
+  >
+    <h1
+      class="max-w-full tracking-tighter leading-tight text-center font-[number:var(--sds-typography-title-hero-font-weight)] text-[color:var(--sds-color-text-brand-on-brand-tertiary)] text-6xl w-[226px] max-md:text-4xl"
+    >
       Sign In
     </h1>
-    <form @submit.prevent="handleSignIn" class="flex flex-col p-6 mt-8 w-80 max-w-full bg-white rounded-lg border border-solid border-zinc-300 font-[number:var(--sds-typography-body-font-weight-regular)] min-w-[320px] text-[length:var(--sds-typography-body-size-medium)] max-md:px-5">
+    <form
+      @submit.prevent="handleSignIn"
+      class="flex flex-col p-6 mt-8 w-80 max-w-full bg-white rounded-lg border border-solid border-zinc-300 font-[number:var(--sds-typography-body-font-weight-regular)] min-w-[320px] text-[length:var(--sds-typography-body-size-medium)] max-md:px-5"
+    >
       <div class="flex flex-col w-full whitespace-nowrap">
-        <label for="email" class="leading-snug text-[color:var(--sds-color-text-default-default)]">
+        <label
+          for="email"
+          class="leading-snug text-[color:var(--sds-color-text-default-default)]"
+        >
           Email
         </label>
         <input
@@ -18,7 +28,10 @@
         />
       </div>
       <div class="flex flex-col mt-6 w-full whitespace-nowrap">
-        <label for="password" class="leading-snug text-[color:var(--sds-color-text-default-default)]">
+        <label
+          for="password"
+          class="leading-snug text-[color:var(--sds-color-text-default-default)]"
+        >
           Password
         </label>
         <input
@@ -30,15 +43,26 @@
           placeholder="Enter your password"
         />
       </div>
-      <div class="flex gap-4 items-center mt-6 w-full leading-none text-[color:var(--sds-color-text-brand-on-brand)]">
-        <button type="submit" class="overflow-hidden flex-1 shrink gap-2 self-stretch p-3 my-auto w-full text-white rounded-lg border border-solid bg-zinc-800 border-zinc-800 min-w-[240px]">
+      <div
+        class="flex gap-4 items-center mt-6 w-full leading-none text-[color:var(--sds-color-text-brand-on-brand)]"
+      >
+        <button
+          type="submit"
+          class="overflow-hidden flex-1 shrink gap-2 self-stretch p-3 my-auto w-full text-white rounded-lg border border-solid bg-zinc-800 border-zinc-800 min-w-[240px]"
+        >
           Sign In
         </button>
       </div>
-      <button class="mt-6 w-fit leading-snug underline text-[color:var(--sds-color-text-default-default)]">
+      <button
+        @click="goToForgotPassword"
+        class="mt-6 w-fit leading-snug underline text-[color:var(--sds-color-text-default-default)]"
+      >
         Forgot password?
       </button>
-      <button @click="goToSignUp" class="mt-6 w-fit leading-snug underline text-[color:var(--sds-color-text-default-default)]">
+      <button
+        @click="goToSignUp"
+        class="mt-6 w-fit leading-snug underline text-[color:var(--sds-color-text-default-default)]"
+      >
         Create an account
       </button>
     </form>
@@ -46,18 +70,18 @@
 </template>
 
 <script>
-import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router'; // Import useRoute
-import axios from 'axios';
-import { BACKEND_URL } from "../utils/config"
+import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router"; // Import useRoute
+import axios from "axios";
+import { BACKEND_URL } from "../utils/config";
 
 export default {
   setup() {
     const router = useRouter();
     const route = useRoute(); // Initialize route
 
-    const email = ref('');
-    const password = ref('');
+    const email = ref("");
+    const password = ref("");
 
     const handleSignIn = async () => {
       try {
@@ -67,36 +91,50 @@ export default {
         });
 
         if (response.status === 200) {
-          const { accessToken, refreshToken, message } = response.data;
+          const { accessToken, refreshToken, message, email_verified } =
+            response.data;
+
+          // Check if email is verified (email_verified will be 1 if verified)
+          if (email_verified !== 1) {
+            alert("Please verify your email before signing in.");
+            return;
+          }
 
           // Store tokens in localStorage
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
 
           // Use route.query.redirect or fallback to the home page
-          const redirectTo = route.query.redirect || '/';
+          const redirectTo = route.query.redirect || "/";
           router.push(redirectTo);
 
-          alert(message || 'Signin successful!');
+          alert(message || "Signin successful!");
         } else {
-          alert('Failed to signin. Please try again.');
+          alert("Failed to sign in. Please try again.");
         }
       } catch (err) {
-        console.error('Error signing in:', err.response?.data || err.message);
-        alert(err.response?.data.error || 'An error occurred. Please try again.');
+        console.error("Error signing in:", err.response?.data || err.message);
+        alert(
+          err.response?.data.error || "An error occurred. Please try again."
+        );
       }
     };
 
     const goToSignUp = () => {
-      router.push('/signup');
+      router.push("/signup");
     };
+    const goToForgotPassword = () => {
+      router.push("/forgot-password");
+    };
+
 
     return {
       email,
       password,
       handleSignIn,
-      goToSignUp
+      goToSignUp,
+      goToForgotPassword
     };
-  }
+  },
 };
 </script>

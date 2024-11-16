@@ -4,7 +4,19 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+
+// Create the SES client with credentials from .env
+const client = new SESClient({
+  region: process.env.AWS_REGION, // Access AWS region from environment variables
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  }
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -58,50 +70,113 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Signup route
 app.post('/api/signup', async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
     if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res.status(400).json({ error: 'Name, email, and password are required' });
     }
 
-    // Check if the email already exists
-    db.query('SELECT * FROM users WHERE email = ? OR name = ?', [email, name], async (err, results) => {
+    // Check if the email or name already exists
+    db.query('SELECT * FROM users WHERE name = ?', [name], async (err, results) => {
       if (err) return res.status(500).json({ error: 'Database query error' });
 
       if (results.length > 0) {
-        // Determine which field(s) are causing the conflict
-        const emailExists = results.some(user => user.email === email);
-        const nameExists = results.some(user => user.name === name);
+        const userWithName = results.find(user => user.name === name); // Find the user object with the same name
 
-        // Respond accordingly
-        if (emailExists && nameExists) {
-          return res.status(400).json({ error: 'Email and name already exist' });
-        } else if (emailExists) {
-          return res.status(400).json({ error: 'Email already exists' });
-        } else if (nameExists) {
-          return res.status(400).json({ error: 'Name already exists' });
+        if (userWithName) {
+          if (userWithName.email === email) {
+            // Username exists and belongs to the same email
+            if (userWithName.email_verified) {
+              // Username exists, belongs to the same email, and is verified
+              return res.status(400).json({
+                error: 'Name and email already exist and are verified'
+              });
+            } else {
+              // Username exists, belongs to the same email, but is not verified yet
+              // Delete the existing user and proceed to insert a new user below
+              db.query('DELETE FROM users WHERE id = ?', [userWithName.id], (err) => {
+                if (err) {
+                  return res.status(500).json({ error: 'Failed to delete existing unverified user' });
+                }
+                console.log('Unverified user deleted successfully');
+                // Continue with new user creation logic (insert user again)
+              });
+            }
+          } else {
+            // Username exists and belongs to a different email
+            return res.status(400).json({ error: 'Name is already in use by another user' });
+          }
         }
       }
-      // Hash the password
+
+
+
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Insert new user into users table
-      db.query('INSERT INTO users (name, email, hashed_password) VALUES (?, ?, ?)', [name, email, hashedPassword], (err, results) => {
-        if (err) return res.status(500).json({ error: 'Failed to register user' });
+      // Generate a unique verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // Token expires in 24 hours
+      const tokenExpiryUTC = tokenExpiry.toISOString(); // "2024-11-15T12:00:00.000Z"
 
-        // Insert default profile for the user into profiles table
-        const defaultProfile = { user_name: name, avatar_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/64c9bda73ca89162bc806ea1e084a3cd2dccf15193fe0e3c0e8008a485352e26?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1', name: '', belt: '', academy: '' };
-        db.query('INSERT INTO profiles SET ?', defaultProfile, (err) => {
-          if (err) return res.status(500).json({ error: 'Failed to create user profile' });
+      // Insert the new user into the database with email_verified set to false
+      db.query(
+        'INSERT INTO users (name, email, hashed_password, verification_token, verification_token_expiry, email_verified, reset_token, reset_token_expiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [name, email, hashedPassword, verificationToken, tokenExpiryUTC, false, null, null],
+        (err, results) => {
+          if (err) {
+            console.error('Database error:', err); 
+            return res.status(500).json({ error: 'Failed to register user' });}
 
-          res.status(201).json({
-            message: 'User registered successfully and default profile created!'
+          // Insert default profile for the user into the profiles table
+          const defaultProfile = {
+            user_name: name,
+            avatar_url: 'https://cdn.builder.io/api/v1/image/assets/TEMP/64c9bda73ca89162bc806ea1e084a3cd2dccf15193fe0e3c0e8008a485352e26?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1',
+            name: '',
+            belt: '',
+            academy: ''
+          };
+
+          db.query('INSERT INTO profiles SET ?', defaultProfile, async (err) => {
+            if (err) return res.status(500).json({ error: 'Failed to create user profile' });
+
+            // Send verification email using Amazon SES
+            const verificationLink = `https://quantifyjiujitsu.com/verify-email?token=${verificationToken}`;
+
+            // Create the SES email parameters
+            const params = {
+              Source: 'no-reply@quantifyjiujitsu.com', // SES verified email
+              Destination: {
+                ToAddresses: [email], // Recipient email
+              },
+              Message: {
+                Subject: {
+                  Data: 'Email Verification - Quantify Jiu-Jitsu',
+                },
+                Body: {
+                  Html: {
+                    Data: `<p>Hi ${name},</p><p>Please verify your email by clicking the link below:</p><p><a href="${verificationLink}">Verify Email</a></p>`
+                  },
+                },
+              },
+            };
+
+            try {
+              // Send the email via SES
+              const command = new SendEmailCommand(params);
+              const data = await client.send(command);
+              console.log('Email sent successfully:');
+
+              // Respond after successful registration and email sent
+              res.status(201).json({ message: 'User registered successfully! Check your email to verify your account.' });
+            } catch (error) {
+              console.error('Error sending verification email:', error);
+              res.status(500).json({ error: 'Failed to send verification email' });
+            }
           });
-        });
-      });
+        }
+      );
     });
   } catch (error) {
     res.status(500).json({ error: 'An unexpected error occurred' });
@@ -116,15 +191,162 @@ app.post('/api/signin', (req, res) => {
     if (err || results.length === 0) return res.status(400).json({ error: 'Invalid email or password' });
 
     const user = results[0];
-    const passwordMatch = await bcrypt.compare(password, user.hashed_password);
 
+    if (user.email_verified !== 1) {  // Checks if it's not equal to 1
+      return res.status(400).json({ error: 'Please verify your email before signing in' });
+    }
+
+    // If email is verified (user.email_verified === 1), continue to password check
+    const passwordMatch = await bcrypt.compare(password, user.hashed_password);
     if (!passwordMatch) return res.status(400).json({ error: 'Invalid email or password' });
 
+    // Generate refresh and access tokens
     const refreshToken = generateRefreshToken(user);
     const accessToken = generateAccessToken(refreshToken);
 
-    res.json({ accessToken, refreshToken, message: 'Signin successful!' });
+    // Respond with accessToken, refreshToken, email_verified, and a message
+    res.json({
+      accessToken,
+      refreshToken,
+      email_verified: user.email_verified,
+      message: 'Signin successful!',
+    });
   });
+});
+
+app.get('/api/verify-email', (req, res) => {
+  const { token } = req.query;
+  if (!token) {
+    return res.status(400).json({ error: 'Token is required' });
+  }
+
+  // Query the database for the token and check its expiry
+  db.query(
+    'SELECT id FROM users WHERE verification_token = ? AND verification_token_expiry > NOW()',
+    [token],
+    (err, results) => {
+      if (err) {
+        console.error('Database error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+
+      if (results.length === 0) {
+        return res.status(400).json({ error: 'Invalid or expired token' });
+      }
+
+      const userId = results[0].id;
+
+      // Update the user's verification status
+      db.query(
+        'UPDATE users SET email_verified = TRUE, verification_token = NULL, verification_token_expiry = NULL WHERE id = ?',
+        [userId],
+        (err) => {
+          if (err) {
+            console.error('Failed to update user:', err);
+            return res.status(500).json({ error: 'Failed to verify email' });
+          }
+
+          res.status(200).json({ message: 'Email verified successfully!' });
+        }
+      );
+    }
+  );
+});
+
+app.post('/api/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    // Check if the email exists in the database
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+      if (err) return res.status(500).json({ error: 'Database query error' });
+
+      if (results.length === 0) {
+        return res.status(404).json({ error: 'Email not found' });
+      }
+
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const tokenExpiry = new Date(Date.now() + 1 * 60 * 60 * 1000); // Token expires in 1 hour
+      const tokenExpiryUTC = tokenExpiry.toISOString(); // "2024-11-15T12:00:00.000Z"
+
+      // Update the user with the reset token and expiry
+      db.query(
+        'UPDATE users SET reset_token = ?, reset_token_expiry = ? WHERE email = ?',
+        [resetToken, tokenExpiryUTC, email],
+        async (err) => {
+          if (err) return res.status(500).json({ error: 'Failed to generate reset token' });
+
+          // Generate the reset link
+          const resetLink = `https://quantifyjiujitsu.com/reset-password?token=${resetToken}`;
+
+          // Prepare the SES email parameters
+          const params = {
+            Source: 'no-reply@quantifyjiujitsu.com', // SES verified email
+            Destination: {
+              ToAddresses: [email],
+            },
+            Message: {
+              Subject: {
+                Data: 'Password Reset - Quantify Jiu-Jitsu',
+              },
+              Body: {
+                Html: {
+                  Data: `<p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 1 hour.</p>`,
+                },
+              },
+            },
+          };
+
+          try {
+            // Send the email via SES
+            const command = new SendEmailCommand(params);
+            const data = await client.send(command);
+            console.log('Password reset email sent successfully:');
+
+            // Respond after successful email sent
+            res.status(200).json({ message: 'Password reset email sent successfully!' });
+          } catch (error) {
+            console.error('Error sending reset email:', error);
+            res.status(500).json({ error: 'Failed to send password reset email' });
+          }
+        }
+      );
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'An unexpected error occurred' });
+  }
+});
+
+app.post('/api/reset-password', async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  db.query(
+    'SELECT * FROM users WHERE reset_token = ? AND reset_token_expiry > NOW()',
+    [token],
+    async (err, results) => {
+      if (err) return res.status(500).json({ error: 'Database query error' });
+      
+      if (results.length === 0) {
+        return res.status(400).json({ error: 'Invalid or expired token' });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      db.query(
+        'UPDATE users SET hashed_password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE id = ?',
+        [hashedPassword, results[0].id],
+        (err) => {
+          if (err) return res.status(500).json({ error: 'Failed to reset password' });
+
+          res.status(200).json({ message: 'Password reset successfully!' });
+        }
+      );
+    }
+  );
 });
 
 // Token Refresh Endpoint
@@ -416,12 +638,10 @@ app.get('/api/search', authenticateToken, (req, res) => {
     language = '',
     sortOption = 'newToOld',
   } = req.query;
-  console.log(publicStatus);
   const sortOrder = sortOption === 'oldToNew' ? 'ASC' : 'DESC';
 
   // Check if a user is authenticated; if yes, get their username
   const currentUser = req.user ? req.user.user_name : null;
-  console.log(currentUser);
   // SQL Query with conditional private post access
   const query = `
     SELECT 
@@ -521,6 +741,7 @@ app.get('/proxy-image', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch thumbnail from Bilibili' });
   }
 });
+
 
 // Start the server
 app.listen(PORT, () => {

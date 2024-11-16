@@ -59,9 +59,9 @@ export default {
   setup(props) {
     const profile = ref({
       avatar_url: "",
-      name: "test",
-      belt: "white",
-      academy: "qcgc",
+      name: "",
+      belt: "",
+      academy: "",
     });
 
     const editProfileLink = computed(() => `/editprofile/${props.userName}`);

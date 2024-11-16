@@ -4,6 +4,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Welcome from '../components/Welcome.vue'
 import SignIn from '../components/SignIn.vue'
 import SignUp from '../components/SignUp.vue'
+import VerifyEmail from '../components/VerifyEmail.vue'
+import ForgotPassword from '../components/ForgotPassword.vue'
+import ResetPassword from '../components/ResetPassword.vue'
 import Documents from '../components/Documents.vue'
 import Database from '../components/Database.vue'
 import Profile from '../components/Profile.vue'
@@ -18,6 +21,9 @@ const routes = [
   { path: '/', name: 'Welcome', component: Welcome },
   { path: '/signin', name: 'SignIn', component: SignIn },
   { path: '/signup', name: 'SignUp', component: SignUp },
+  { path: '/verify-email', name: 'VerifyEmail', component: VerifyEmail, props: true},
+  { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword, props: true},
+  { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, props: true},
   { path: '/docs', name: 'Documents', component: Documents },
   { path: '/database', name: 'Database', component: Database, meta: { requiresAuth: true } },
   { path: '/profile/:userName', name: 'Profile', component: Profile, props: true, meta: { requiresAuth: true } },
