@@ -1,8 +1,10 @@
 <template>
-  <main class="flex flex-col px-24 py-16 bg-white min-w-[240px] max-md:px-5">
-    <section
-      class="flex flex-wrap flex-1 content-center gap-8 size-full max-md:max-w-full"
-    >
+  <main
+    class="flex flex-row gap-8 px-8 py-8 bg-white min-w-[240px] max-md:px-4"
+  >
+    <!-- Left Section: Video and Metadata -->
+    <section class="flex flex-col flex-1 gap-6">
+      <!-- Video -->
       <iframe
         id="video-iframe"
         v-if="post.video_id"
@@ -13,185 +15,106 @@
             post.sequence_start_time
           )
         "
-        scrolling=""
+        scrolling="no"
         border="0"
         frameborder="no"
         framespacing="0"
         allowfullscreen="true"
-        class="aspect-video flex-1"
+        class="aspect-video w-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerpolicy="strict-origin-when-cross-origin"
-      >
-      </iframe>
+      ></iframe>
+
       <img
         v-else
         loading="lazy"
         src="https://cdn.builder.io/api/v1/image/assets/TEMP/2f69a4548ace8090c05433e11f57f205ac0b85a8b70f1642dc2ef2de05544a72?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
         alt="Video thumbnail"
-        class="object-contain flex-1 shrink self-stretch aspect-[1.86] basis-0 h-[360px] min-h-[360px] min-w-[640px] w-[640px] max-md:max-w-full"
+        class="object-contain aspect-video w-full"
       />
 
-      <div class="flex flex-col py-2 min-w-[240px] w-[350px]">
-        <header class="flex overflow-hidden gap-2.5 items-center w-full">
-          <h1
-            class="flex flex-1 shrink gap-2.5 items-center self-stretch py-1 my-auto text-2xl tracking-tight leading-tight basis-0 font-[number:var(--sds-typography-heading-font-weight)] min-w-[240px] text-[color:var(--sds-color-text-default-default)]"
-          >
+      <!-- Metadata -->
+      <div class="flex flex-col gap-4">
+        <header class="flex items-center gap-2 justify-between">
+          <h1 class="text-2xl font-semibold text-gray-800 leading-tight">
             {{ post.title || "Title Unavailable" }}
           </h1>
           <router-link
             v-if="post.user_name === currentUser"
             :to="editPageLink"
-            class="flex gap-2.5 justify-center items-center self-stretch my-auto w-6"
-            aria-label="More options"
+            class="flex items-center justify-center w-6 h-6"
+            aria-label="Edit"
           >
             <img
               loading="lazy"
               src="https://cdn.builder.io/api/v1/image/assets/TEMP/4728a160951595f6e5389159b3e8e714f7e82c751a59139a4751cce2c9ca8e56?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              alt="More options"
-              class="object-contain self-stretch my-auto w-6 aspect-square"
+              alt="Edit"
+              class="object-contain w-6 h-6"
             />
           </router-link>
         </header>
-        <div class="flex items-center gap-4">
-          <router-link
-            :to="profileLink"
-            class="flex gap-4 items-center mt-4 w-full whitespace-nowrap text-[length:var(--sds-typography-body-size-medium)]"
-          >
-            <div
-              class="flex gap-3 items-start self-stretch my-auto leading-snug w-[139px]"
-            >
+
+        <div class="flex flex-col gap-4">
+          <!-- User Info -->
+          <div class="flex items-center gap-4">
+            <router-link :to="profileLink" class="flex gap-4 items-center">
               <img
                 :src="post.avatar_url"
                 alt="User avatar"
-                class="object-contain shrink-0 w-10 rounded-full aspect-square"
+                class="w-12 h-12 rounded-full"
               />
-              <div
-                class="flex flex-col flex-1 shrink justify-between basis-0 min-h-[46px]"
-              >
-                <div class="font-semibold text-gray-600">
+              <div>
+                <div class="font-medium text-gray-600">
                   {{ post.name || "Anonymous" }}
                 </div>
                 <div class="text-gray-500">
                   {{ post.belt || "No rank" }}
                 </div>
               </div>
-            </div>
-          </router-link>
-          <!--
-          <button
-            class="flex overflow-hidden gap-2 justify-center items-center self-stretch p-2 my-auto leading-none bg-white rounded-lg border border-solid border-zinc-400 font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-brand-default)]"
-          >
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/057017f7dbfe75b1d43399f44e24c5bd044ebf2ce6d0122446d26ee8886b5fcb?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              alt=""
-              class="object-contain shrink-0 self-stretch my-auto w-4 aspect-square"
-            />
-            <span class="self-stretch my-auto">0</span>
-          </button>
+            </router-link>
+          </div>
 
-          <button aria-label="Action 1">
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/acbf67aca969c4139c246afcd593a834cc483248230f763a5fdaec316c1cf917?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              alt=""
-              class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
-            />
-          </button>
+          <!-- Metadata in Two Columns -->
+          <div class="grid grid-cols-2 gap-x-24 gap-4">
+            <div class="flex justify-between">
+              <span class="font-semibold">Movement Type</span>
+              <span>{{ post.movement_type || "Not specified" }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-semibold">Sequence Start Time</span>
+              <span>{{ post.sequence_start_time || "Not specified" }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-semibold">Starting Position</span>
+              <span>{{ post.starting_position || "Not specified" }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-semibold">Public Status</span>
+              <span>{{ post.public_status || "Not specified" }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="font-semibold">Ending Position</span>
+              <span>{{ post.ending_position || "Not specified" }}</span>
+            </div>
 
-          <button aria-label="Action 2">
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/2d842ba5f20161c5d394add2d4b2b5efe41e5b25c0ba850c14392c67973e8e9c?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              alt=""
-              class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
-            />
-          </button>
-          <button aria-label="Action 3">
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/62ec68088f17750b86b372f90f7d57d5ba91bb13331b2a55c348100b52ce1380?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              alt=""
-              class="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
-            />
-          </button>
-                    -->
-        </div>
-        <!-- Post details section -->
-        <div
-          class="flex flex-col mt-4 w-full leading-snug text-black bg-white text-[length:var(--sds-typography-body-size-medium)]"
-        >
-          <div
-            class="flex overflow-hidden gap-10 justify-between items-center w-full bg-white"
-          >
-            <div class="self-stretch my-auto font-semibold">Movement Type</div>
-            <div class="self-stretch my-auto">
-              {{ post.movement_type || "Not specified" }}
-            </div>
-          </div>
-          <div
-            class="flex overflow-hidden gap-10 justify-between items-center mt-1 w-full bg-white"
-          >
-            <div class="self-stretch my-auto font-semibold">
-              Starting Position
-            </div>
-            <div class="self-stretch my-auto">
-              {{ post.starting_position || "Not specified" }}
-            </div>
-          </div>
-          <div
-            class="flex overflow-hidden gap-10 justify-between items-center mt-1 w-full bg-white"
-          >
-            <div class="self-stretch my-auto font-semibold">
-              Ending Position
-            </div>
-            <div class="self-stretch my-auto">
-              {{ post.ending_position || "Not specified" }}
-            </div>
-          </div>
-          <div
-            class="flex overflow-hidden gap-10 justify-between items-center mt-1 w-full bg-white"
-          >
-            <div class="self-stretch my-auto font-semibold">
-              Sequence Start Time
-            </div>
-            <div class="self-stretch my-auto">
-              {{ post.sequence_start_time || "Not specified" }}
-            </div>
-          </div>
-          <div
-            class="flex overflow-hidden gap-10 justify-between items-center mt-1 w-full bg-white"
-          >
-            <div class="self-stretch my-auto font-semibold">Public Status</div>
-            <div class="self-stretch my-auto">
-              {{ post.public_status || "Not specified" }}
-            </div>
-          </div>
-          <div
-            class="flex overflow-hidden gap-10 justify-between items-center mt-1 w-full whitespace-nowrap bg-white"
-          >
-            <div class="self-stretch my-auto font-semibold">Language</div>
-            <div class="self-stretch my-auto">
-              {{ post.language || "Not specified" }}
+            <div class="flex justify-between">
+              <span class="font-semibold">Language</span>
+              <span>{{ post.language || "Not specified" }}</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Notes section -->
+    <!-- Right Section: Notes -->
     <section
       v-if="parsedNotes.length"
-      class="flex flex-col py-8 mt-6 w-full leading-snug bg-white text-[length:var(--sds-typography-body-size-medium)] max-md:max-w-full"
+      class="flex flex-col w-1/3 min-w-[240px] bg-white"
     >
-      <h2
-        class="tracking-tight leading-tight whitespace-nowrap font-semibold text-black text-base"
-      >
-        Notes
-      </h2>
-      <ul class="list-none p-0">
+      <h2 class="text-lg font-semibold text-gray-800">Notes</h2>
+      <ul class="list-none p-0 mt-4">
         <li
-          class="flex overflow-hidden flex-wrap gap-2.5 items-center mt-4 w-full bg-white max-md:max-w-full"
+          class="flex items-start gap-2 mt-4"
           v-for="(note, index) in parsedNotes"
           :key="index"
         >
@@ -201,44 +124,13 @@
           >
             {{ note.timestamp }}
           </time>
-          <p class="text-black">{{ note.text }}</p>
+          <p class="text-gray-700">{{ note.text }}</p>
         </li>
       </ul>
     </section>
-
-    <!--    Comments section 
-    <section
-      class="flex flex-col py-8 mt-6 w-full leading-snug bg-white text-[length:var(--sds-typography-body-size-medium)] max-md:max-w-full"
-    >
-      <h2
-        class="tracking-tight leading-tight whitespace-nowrap font-semibold text-black text-base"
-      >
-        Comments
-      </h2>
-      <article
-        class="flex flex-wrap gap-2 items-start py-2 mt-4 w-full rounded-lg min-w-[240px] max-md:max-w-full"
-      >
-         Static sample comment - replace with dynamic comments if needed 
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/627b91dced9c8426bf48fc2d969a954670a66ff70203371f9ab4ba516f040d25?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-          alt="Reviewer avatar"
-          class="object-contain shrink-0 w-10 rounded-full aspect-square"
-        />
-        <div
-          class="flex flex-col flex-1 shrink basis-0 min-w-[240px] max-md:max-w-full"
-        >
-          <header class="flex gap-2 items-start self-start">
-            <h3 class="font-semibold text-gray-600">Reviewer name</h3>
-            <time class="text-gray-500">Date</time>
-          </header>
-          <p class="text-black">Review body</p>
-        </div>
-      </article>
-    </section>
--->
   </main>
 </template>
+
 
 <script>
 import axios from "axios";

@@ -3,7 +3,10 @@
     class="flex flex-col self-stretch p-4 my-auto bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px] w-[332px]"
   >
     <!-- Video Thumbnail -->
-    <div class="relative w-full h-48 bg-neutral-100 overflow-hidden rounded-lg">
+    <div
+      class="relative w-full bg-neutral-100 overflow-hidden rounded-lg"
+      style="aspect-ratio: 16/9"
+    >
       <router-link :to="`/view/${id}`">
         <img
           :src="imageSrc"
@@ -15,33 +18,37 @@
 
     <!-- Post Details -->
     <div class="flex gap-4 items-center mt-4 w-full">
-      <!-- Avatar Image -->
-      <router-link :to="`/profile/${user_name}`">
-        <img
-          :src="avatarSrc"
-          :alt="`${name}'s avatar`"
-          class="object-contain shrink-0 self-stretch my-auto w-10 rounded-full aspect-square"
-        />
-      </router-link>
-
       <!-- Title and Metadata -->
       <div
         class="flex flex-col flex-1 shrink self-stretch my-auto basis-0 min-w-[240px]"
       >
         <router-link :to="`/view/${id}`">
           <h2
-            class="leading-tight text-black font-bold text-[length:var(--sds-typography-subheading-size-medium)]"
+            class="leading-tight text-black font-bold text-[length:var(--sds-typography-subheading-size-medium)] truncate-title"
           >
             {{ title }}
           </h2>
         </router-link>
-        <div
-          class="flex gap-10 justify-between items-center w-full leading-snug font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-default-secondary)] text-[length:var(--sds-typography-body-size-small)]"
-        >
+        <div class="flex gap-4 items-center mt-1 w-full">
+          <!-- Avatar Image -->
           <router-link :to="`/profile/${user_name}`">
-            <div class="self-stretch my-auto">{{ name }} - {{ belt }}</div>
+            <img
+              :src="avatarSrc"
+              :alt="`${name}'s avatar`"
+              class="object-contain shrink-0 self-stretch my-auto w-10 rounded-full aspect-square"
+            />
           </router-link>
-          <time class="self-stretch my-auto">{{ formattedDate }}</time>
+          <div
+            class="flex gap-10 justify-between items-center w-full leading-snug font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-default-secondary)] text-[length:var(--sds-typography-body-size-small)]"
+          >
+            <router-link :to="`/profile/${user_name}`">
+              <div class="flex flex-col self-stretch my-auto">
+                <span>{{ name }}</span>
+                <span>{{ belt }}</span>
+              </div>
+            </router-link>
+            <time class="self-stretch my-auto">{{ formattedDate }}</time>
+          </div>
         </div>
       </div>
     </div>
@@ -51,7 +58,7 @@
 <script>
 import { computed, ref, onMounted } from "vue";
 import axios from "axios";
-import { BACKEND_URL } from "../utils/config"
+import { BACKEND_URL } from "../utils/config";
 
 export default {
   name: "PreviewCard",
@@ -141,3 +148,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.truncate-title {
+  white-space: nowrap; /* Prevent wrapping */
+  overflow: hidden; /* Hide the overflow text */
+  text-overflow: ellipsis; /* Show ellipsis for overflowing text */
+}
+</style>
+

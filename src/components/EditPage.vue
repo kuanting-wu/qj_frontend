@@ -1,146 +1,193 @@
 <template>
   <main
-    class="flex flex-col px-24 py-16 bg-white font-[number:var(--sds-typography-body-font-weight-regular)] min-w-[240px] text-[length:var(--sds-typography-body-size-medium)] max-md:px-5"
+    class="flex flex-row gap-8 px-8 py-6 bg-white min-w-[240px] max-md:px-4"
   >
-    <section
-      class="flex flex-wrap gap-8 text-[color:var(--sds-color-text-default-default)] max-md:max-w-full"
-    >
-      <form
-        @submit.prevent="submitForm"
-        class="flex flex-col min-w-[300px] w-[300px]"
-      >
-        <div class="flex flex-col mt-2 w-full">
-          <label for="title">Title</label>
+    <!-- Left Section: Video and Metadata -->
+    <section class="flex flex-col flex-1 gap-6">
+      <!-- Video -->
+      <iframe
+        id="video-iframe"
+        v-if="formData.video_id"
+        :src="
+          getEmbedUrl(
+            formData.video_id,
+            formData.video_platform,
+            formData.sequence_start_time
+          )
+        "
+        scrolling="no"
+        border="0"
+        frameborder="no"
+        framespacing="0"
+        allowfullscreen="true"
+        class="aspect-video w-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
+
+      <img
+        v-else
+        loading="lazy"
+        src="https://cdn.builder.io/api/v1/image/assets/TEMP/2f69a4548ace8090c05433e11f57f205ac0b85a8b70f1642dc2ef2de05544a72?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
+        alt="Video thumbnail"
+        class="object-contain aspect-video w-full"
+      />
+
+      <!-- Metadata -->
+      <div class="flex flex-col gap-4">
+        <div class="flex justify-between items-center">
+          <label
+            for="title"
+            class="text-2xl font-semibold text-gray-800 leading-tight"
+          >
+            Title
+          </label>
           <input
             id="title"
             type="text"
             v-model="formData.title"
             required
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px]"
+            class="input-field w-2/3 border rounded"
             placeholder="Enter title"
           />
         </div>
-        <div class="flex flex-col mt-2 w-full leading-snug">
-          <label for="videoUrl">Video URL</label>
-          <textarea
-            id="videoUrl"
-            v-model="formData.video_url"
-            @input="extractVideoId"
-            required
-            class="overflow-hidden flex-1 shrink px-4 py-3 mt-1 w-full leading-tight whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 min-h-[80px] min-w-[240px]"
-            placeholder="Enter video URL"
-          />
-        </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="movementType">Movement Type</label>
-          <input
-            id="movementType"
-            type="text"
-            v-model="formData.movement_type"
-            required
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px]"
-            placeholder="Enter movement type"
-          />
-        </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="startingPosition">Starting Position</label>
-          <input
-            id="startingPosition"
-            type="text"
-            v-model="formData.starting_position"
-            required
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px]"
-            placeholder="Enter starting position"
-          />
-        </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="endingPosition">Ending Position</label>
-          <input
-            id="endingPosition"
-            type="text"
-            v-model="formData.ending_position"
-            required
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px]"
-            placeholder="Enter ending position"
-          />
-        </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="sequenceStartTime">Sequence Start Time</label>
-          <input
-            id="sequenceStartTime"
-            type="text"
-            v-model="formattedTime"
-            required
-            class="overflow-hidden px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px]"
-            placeholder="hh:mm:ss"
-            maxlength="8"
-          />
-        </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="publicStatus">Public Status</label>
-          <select
-            id="publicStatus"
-            v-model="formData.public_status"
-            required
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px]"
-          >
-            <option value="public">Public</option>
-            <option value="private">Private</option>
-          </select>
-        </div>
-        <div class="flex flex-col mt-2 w-full whitespace-nowrap">
-          <label for="language">Language</label>
-          <select
-            id="language"
-            v-model="formData.language"
-            required
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none bg-white rounded-lg border border-solid border-zinc-300 min-w-[240px]"
-          >
-            <option value="en">English</option>
-            <option value="tc">Traditional Chinese</option>
-          </select>
-        </div>
-      </form>
-      <div
-        class="flex overflow-hidden flex-col justify-center px-px my-auto leading-snug whitespace-nowrap min-h-[607px] min-w-[420px] w-[700px] max-md:max-w-full"
-      >
-        <div class="flex flex-col flex-1 w-full max-md:max-w-full">
-          <label for="notes" class="max-md:max-w-full">Notes</label>
-          <textarea
-            id="notes"
-            v-model="formData.notes"
-            required
-            class="overflow-hidden flex-1 shrink px-4 pt-3 mt-1 w-full bg-white rounded-lg border border-solid border-zinc-300 min-h-[581px] min-w-[240px] pb-[547px] max-md:pb-24 max-md:max-w-full"
-            placeholder="Enter notes here"
-          ></textarea>
+
+        <!-- Metadata in Grid -->
+        <div class="grid grid-cols-2 gap-x-24 gap-y-4">
+          <!-- Movement Type -->
+          <div class="flex justify-between items-center">
+            <label for="movementType" class="font-semibold"
+              >Movement Type</label
+            >
+            <input
+              id="movementType"
+              type="text"
+              v-model="formData.movement_type"
+              required
+              class="input-field w-1/2 border rounded"
+              placeholder="Enter movement type"
+            />
+          </div>
+
+          <!-- Sequence Start Time -->
+          <div class="flex justify-between items-center">
+            <label for="sequenceStartTime" class="font-semibold"
+              >Sequence Start Time</label
+            >
+            <input
+              id="sequenceStartTime"
+              type="text"
+              v-model="formData.sequence_start_time"
+              class="input-field w-1/2 border rounded"
+              placeholder="hh:mm:ss"
+              maxlength="8"
+              required
+            />
+          </div>
+
+          <!-- Starting Position -->
+          <div class="flex justify-between items-center">
+            <label for="startingPosition" class="font-semibold"
+              >Starting Position</label
+            >
+            <input
+              id="startingPosition"
+              type="text"
+              v-model="formData.starting_position"
+              required
+              class="input-field w-1/2 border rounded"
+              placeholder="Enter starting position"
+            />
+          </div>
+
+          <!-- Ending Position -->
+          <div class="flex justify-between items-center">
+            <label for="endingPosition" class="font-semibold"
+              >Ending Position</label
+            >
+            <input
+              id="endingPosition"
+              type="text"
+              v-model="formData.ending_position"
+              required
+              class="input-field w-1/2 border rounded"
+              placeholder="Enter ending position"
+            />
+          </div>
+
+          <!-- Public Status -->
+          <div class="flex justify-between items-center">
+            <label for="publicStatus" class="font-semibold"
+              >Public Status</label
+            >
+            <select
+              id="publicStatus"
+              v-model="formData.public_status"
+              required
+              class="input-field w-1/2 border rounded"
+            >
+              <option value="public">Public</option>
+              <option value="private">Private</option>
+            </select>
+          </div>
+
+          <!-- Language -->
+          <div class="flex justify-between items-center">
+            <label for="language" class="font-semibold">Language</label>
+            <select
+              id="language"
+              v-model="formData.language"
+              required
+              class="input-field w-1/2 border rounded"
+            >
+              <option value="en">English</option>
+              <option value="tc">Traditional Chinese</option>
+            </select>
+          </div>
         </div>
       </div>
     </section>
-    <footer
-      class="flex flex-wrap gap-6 justify-center items-center p-16 mt-6 w-full leading-none whitespace-nowrap bg-white max-md:px-5 max-md:max-w-full"
-    >
-      <button
-        type="button"
-        class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-neutral-200 border-neutral-500 text-[color:var(--sds-color-text-default-default)]"
-      >
-        Delete
-      </button>
-      <button
-        type="submit"
-        @click="submitForm"
-        class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-zinc-800 border-zinc-800 text-white"
-      >
-        Submit
-      </button>
-    </footer>
+    <!-- Right Section: Notes --->
+    <section class="flex flex-col w-1/3 min-w-[240px] bg-white">
+      <label for="notes" class="mb-2 font-semibold">Notes</label>
+      <textarea
+        id="notes"
+        v-model="formData.notes"
+        class="textarea-field flex-grow resize-none p-2 border rounded"
+        placeholder="Enter notes here"
+      ></textarea>
+    </section>
   </main>
+  <footer class="flex gap-6 justify-center items-center mt-6 py-4">
+    <button
+      type="button"
+      class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-neutral-200 border-neutral-500 text-[color:var(--sds-color-text-default-default)]"
+      @click="cancelEdit"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-zinc-800 border-zinc-800 text-white"
+      @click="submitForm"
+    >
+      Submit
+    </button>
+    <button
+      type="button"
+      class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-red-500 border-red-500 text-white"
+      @click="deletePost"
+    >
+      Delete
+    </button>
+  </footer>
 </template>
 
 <script>
 import { ref, watch, onMounted } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import { BACKEND_URL } from "../utils/config"
+import { BACKEND_URL } from "../utils/config";
 
 export default {
   props: ["postId"], // Define props to receive postId
@@ -163,7 +210,7 @@ export default {
     const fetchPostData = async () => {
       try {
         const response = await axios.get(
-          `${BACKEND_URL}/api/posts/${props.postId}`
+          `${BACKEND_URL}/api/viewpost/${props.postId}`
         );
         formData.value = response.data;
       } catch (error) {
@@ -171,35 +218,20 @@ export default {
       }
     };
 
-    // Function to extract video ID based on platform
-    const extractVideoId = () => {
-      const url = videoUrl.value;
-
-      // Check for YouTube video ID
-      const youtubeMatch = url.match(
-        /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-      );
-      if (youtubeMatch) {
-        formData.value.video_id = youtubeMatch[1];
-        formData.value.video_platform = "YouTube";
-        return;
-      }
-
-      // Check for Bilibili video ID
-      const bilibiliMatch = url.match(
-        /(?:https?:\/\/)?(?:www\.)?bilibili\.com\/video\/(BV[0-9A-Za-z]+|av\d+)/
-      );
-      if (bilibiliMatch) {
-        formData.value.video_id = bilibiliMatch[1];
-        formData.value.video_platform = "Bilibili";
-        return;
-      }
-
-      // Clear fields if the URL doesn't match
-      formData.value.video_id = "";
-      formData.value.video_platform = "";
+    const convertToSeconds = (time) => {
+      const [hours, minutes, seconds] = time.split(":").map(Number);
+      return hours * 3600 + minutes * 60 + seconds;
     };
 
+    const getEmbedUrl = (videoId, platform, startTime) => {
+      const startSeconds = convertToSeconds(startTime);
+      if (platform === "YouTube") {
+        return `https://www.youtube.com/embed/${videoId}?start=${startSeconds}&rel=0`;
+      } else if (platform === "Bilibili") {
+        return `https://player.bilibili.com/player.html?bvid=${videoId}&t=${startSeconds}&no_related=1`;
+      }
+      return "";
+    };
     // Function to format time input
     const formatTime = (value) => {
       let input = value.replace(/[^0-9]/g, "");
@@ -213,6 +245,32 @@ export default {
       formData.value.sequence_start_time = formatTime(newValue);
       formattedTime.value = formatTime(newValue);
     });
+
+    const cancelEdit = () => {
+      router.push(`/view/${props.postId}`); // Navigate back to the view page of the current post
+    };
+
+    const deletePost = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from localStorage
+
+        const response = await axios.delete(
+          `${BACKEND_URL}/api/deletepost/${props.postId}`, // Corrected template string
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Pass access token in Authorization header
+            },
+          }
+        );
+
+        alert(response.data.message); // Display a success message
+        // Navigate back to the home page or another relevant page
+        router.push(`/`);
+      } catch (error) {
+        console.error("Error deleting post:", error);
+        alert("Failed to delete the post.");
+      }
+    };
 
     const submitForm = async () => {
       try {
@@ -244,8 +302,10 @@ export default {
     return {
       formattedTime,
       formData,
+      cancelEdit,
+      deletePost,
       submitForm,
-      extractVideoId,
+      getEmbedUrl,
     };
   },
 };

@@ -31,7 +31,10 @@ const db = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT || 3306
+  port: process.env.DB_PORT || 3306,
+  connectTimeout: 10000, // 10 seconds
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0, // Start keep-alive immediately
 });
 
 const generateAccessToken = (refreshToken) => {
@@ -126,8 +129,9 @@ app.post('/api/signup', async (req, res) => {
         [name, email, hashedPassword, verificationToken, tokenExpiryUTC, false, null, null],
         (err, results) => {
           if (err) {
-            console.error('Database error:', err); 
-            return res.status(500).json({ error: 'Failed to register user' });}
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Failed to register user' });
+          }
 
           // Insert default profile for the user into the profiles table
           const defaultProfile = {
@@ -329,7 +333,7 @@ app.post('/api/reset-password', async (req, res) => {
     [token],
     async (err, results) => {
       if (err) return res.status(500).json({ error: 'Database query error' });
-      
+
       if (results.length === 0) {
         return res.status(400).json({ error: 'Invalid or expired token' });
       }
@@ -587,10 +591,50 @@ app.put('/api/editpost/:id', authenticateToken, (req, res) => {
   });
 });
 
-// Endpoint to fetch a post by ID
-app.get('/api/viewpost/:id', (req, res) => {
+app.delete('/api/deletepost/:id', authenticateToken, (req, res) => {
   const postId = req.params.id;
 
+  // Check if the post exists and retrieve the owner's name
+  const selectQuery = 'SELECT owner_name FROM posts WHERE id = ?';
+  db.query(selectQuery, [postId], (err, results) => {
+    if (err) {
+      console.error('Error retrieving post:', err);
+      return res.status(500).json({ error: 'Database query error' });
+    }
+
+    // If the post is not found, return a 404 error
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+
+    // Check if the authenticated user is the owner of the post
+    const postOwner = results[0].owner_name;
+    if (req.user.user_name !== postOwner) {
+      return res.status(403).json({ error: 'User not authorized to delete this post' });
+    }
+
+    // Proceed with deleting the post if the user is the owner
+    const deleteQuery = 'DELETE FROM posts WHERE id = ?';
+    db.query(deleteQuery, [postId], (deleteErr, deleteResults) => {
+      if (deleteErr) {
+        console.error('Error deleting post:', deleteErr);
+        return res.status(500).json({ error: 'Failed to delete the post' });
+      }
+
+      // If no rows were affected, the deletion failed
+      if (deleteResults.affectedRows === 0) {
+        return res.status(404).json({ error: 'Post not found or already deleted' });
+      }
+
+      // Send a success message
+      res.json({ message: 'Post deleted successfully' });
+    });
+  });
+});
+
+
+app.get('/api/viewpost/:id', (req, res) => {
+  const postId = req.params.id;
   const query = `
     SELECT 
       p.id,

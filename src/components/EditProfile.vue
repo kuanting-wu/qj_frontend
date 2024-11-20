@@ -14,46 +14,65 @@
         />
       </figure>
       <div
-        class="flex flex-col justify-center items-start self-stretch my-auto gap-4"
+        class="flex flex-col justify-center items-start self-stretch my-auto"
       >
         <!-- Name Field -->
-        <div class="flex flex-col">
-          <label class="text-gray-700 font-semibold mb-1">Name</label>
+        <div class="flex justify-between items-center w-full">
+          <label for="name" class="font-semibold text-left w-1/4">Name</label>
           <input
+            id="name"
+            type="text"
             v-model="profile.name"
-            class="tracking-tighter leading-tight text-center font-[number:var(--sds-typography-title-page-font-weight)] text-[color:var(--sds-color-text-default-default)] text-[length:var(--sds-typography-title-page-size-base)] max-md:text-4xl outline-none border border-solid border-zinc-300 rounded px-2 py-1 focus:outline-blue-500"
+            required
+            class="input-field ml-auto w-2/3 border rounded"
+            placeholder="Enter name"
           />
         </div>
 
         <!-- Belt Field -->
-        <div class="flex flex-col">
-          <label class="text-gray-700 font-semibold mb-1">Belt</label>
+        <div class="flex justify-between items-center mt-4 w-full">
+          <label for="belt" class="font-semibold w-1/4">Belt</label>
           <input
+            id="belt"
+            type="text"
             v-model="profile.belt"
-            class="tracking-tighter leading-tight text-center font-[number:var(--sds-typography-title-page-font-weight)] text-[color:var(--sds-color-text-default-default)] text-[length:var(--sds-typography-title-page-size-base)] max-md:text-4xl outline-none border border-solid border-zinc-300 rounded px-2 py-1 focus:outline-blue-500"
+            required
+            class="input-field ml-auto w-2/3 border rounded"
+            placeholder="Enter belt"
           />
         </div>
 
         <!-- Academy Field -->
-        <div class="flex flex-col">
-          <label class="text-gray-700 font-semibold mb-1">Academy</label>
+        <div class="flex justify-between items-center mt-4 w-full">
+          <label for="academy" class="font-semibold w-1/4">Academy</label>
           <input
+            id="academy"
+            type="text"
             v-model="profile.academy"
-            class="tracking-tighter leading-tight text-center font-[number:var(--sds-typography-title-page-font-weight)] text-[color:var(--sds-color-text-default-default)] text-[length:var(--sds-typography-title-page-size-base)] max-md:text-4xl outline-none border border-solid border-zinc-300 rounded px-2 py-1 focus:outline-blue-500"
+            required
+            class="input-field ml-auto w-2/3 border rounded"
+            placeholder="Enter academy"
           />
         </div>
-
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          @click="submitProfile"
-          class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-zinc-800 border-zinc-800 text-white"
-        >
-          Submit
-        </button>
       </div>
     </div>
   </article>
+  <footer class="flex gap-6 justify-center items-center mt-6 py-4">
+    <button
+      type="button"
+      class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-neutral-200 border-neutral-500 text-[color:var(--sds-color-text-default-default)]"
+      @click="cancelEdit"
+    >
+      Cancel
+    </button>
+    <button
+      type="submit"
+      class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-zinc-800 border-zinc-800 text-white"
+      @click="submitProfile"
+    >
+      Submit
+    </button>
+  </footer>
 </template>
 
 <script>
@@ -104,11 +123,16 @@ export default {
       }
     };
 
+    const cancelEdit = () => {
+      router.push(`/profile/${props.userName}`); // Navigate back to the profile page
+    };
+
     onMounted(fetchProfile);
 
     return {
       profile,
       submitProfile,
+      cancelEdit, // Expose cancelEdit to the template
     };
   },
 };
