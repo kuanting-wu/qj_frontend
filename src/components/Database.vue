@@ -245,7 +245,6 @@ export default {
         });
 
         posts.value = data.posts; // Update posts data with response
-        console.log("Fetched posts:", data.posts);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }

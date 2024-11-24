@@ -1,5 +1,6 @@
 import { jwtDecode } from 'jwt-decode'; // Use named import and correct casing
 import axios from "axios";
+import { BACKEND_URL } from "./config";
 
 // Example function using jwtDecode
 export function isTokenValid() {
@@ -19,7 +20,7 @@ export function isTokenValid() {
 
 export function refreshAccessToken(refreshToken) {
   return new Promise((resolve, reject) => {
-    axios.post('http://localhost:3000/api/refresh-token', { refreshToken })
+    axios.post(`${BACKEND_URL}/api/refresh-token`, { refreshToken })
       .then(response => {
         const { accessToken } = response.data;
         resolve(accessToken); // Resolve with the new access token

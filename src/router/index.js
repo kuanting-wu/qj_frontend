@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Welcome from '../components/Welcome.vue'
 import SignIn from '../components/SignIn.vue'
 import SignUp from '../components/SignUp.vue'
+import Terms from '../components/Terms.vue'
 import VerifyEmail from '../components/VerifyEmail.vue'
 import ForgotPassword from '../components/ForgotPassword.vue'
 import ResetPassword from '../components/ResetPassword.vue'
@@ -21,6 +22,7 @@ const routes = [
   { path: '/', name: 'Welcome', component: Welcome },
   { path: '/signin', name: 'SignIn', component: SignIn },
   { path: '/signup', name: 'SignUp', component: SignUp },
+  { path: '/terms', name: 'Terms', component: Terms },
   { path: '/verify-email', name: 'VerifyEmail', component: VerifyEmail, props: true},
   { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword, props: true},
   { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, props: true},
@@ -46,7 +48,6 @@ router.beforeEach(async (to, from, next) => {
   // Function to handle redirection after token refresh
   const proceedAfterRefresh = (newAccessToken) => {
     localStorage.setItem('accessToken', newAccessToken);
-    console.log("accessToken refreshed")
     next();
   };
 

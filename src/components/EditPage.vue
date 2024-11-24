@@ -16,14 +16,12 @@
           )
         "
         scrolling="no"
-        border="0"
-        frameborder="no"
-        framespacing="0"
-        allowfullscreen="true"
+        allowfullscreen
+        sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"
         class="aspect-video w-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        referrerpolicy="strict-origin-when-cross-origin"
       ></iframe>
+      
 
       <img
         v-else
@@ -100,21 +98,6 @@
             />
           </div>
 
-          <!-- Ending Position -->
-          <div class="flex justify-between items-center">
-            <label for="endingPosition" class="font-semibold"
-              >Ending Position</label
-            >
-            <input
-              id="endingPosition"
-              type="text"
-              v-model="formData.ending_position"
-              required
-              class="input-field w-1/2 border rounded"
-              placeholder="Enter ending position"
-            />
-          </div>
-
           <!-- Public Status -->
           <div class="flex justify-between items-center">
             <label for="publicStatus" class="font-semibold"
@@ -129,6 +112,21 @@
               <option value="public">Public</option>
               <option value="private">Private</option>
             </select>
+          </div>
+
+          <!-- Ending Position -->
+          <div class="flex justify-between items-center">
+            <label for="endingPosition" class="font-semibold"
+              >Ending Position</label
+            >
+            <input
+              id="endingPosition"
+              type="text"
+              v-model="formData.ending_position"
+              required
+              class="input-field w-1/2 border rounded"
+              placeholder="Enter ending position"
+            />
           </div>
 
           <!-- Language -->
@@ -149,51 +147,81 @@
     </section>
     <!-- Right Section: Notes --->
     <section class="flex flex-col w-1/3 min-w-[240px] bg-white">
-      <label for="notes" class="mb-2 font-semibold">Notes</label>
-      <textarea
-        id="notes"
-        v-model="formData.notes"
-        class="textarea-field flex-grow resize-none p-2 border rounded"
-        placeholder="Enter notes here"
-      ></textarea>
+      <div class="flex justify-between items-center mb-2">
+        <div class="flex gap-4">
+          <!-- Notes Label -->
+          <label for="notes" class="font-semibold">Notes</label>
+          <!-- Time Button -->
+          <button
+            type="button"
+            class="flex items-center rounded"
+            @click="getCurrentTime"
+          >
+            <img src="@/assets/icons/Time.svg" alt="Time" class="w-5 h-5" />
+          </button>
+          <!-- Code Button -->
+          <button
+            type="button"
+            class="flex items-center rounded"
+            @click="codeMode"
+          >
+            <img src="@/assets/icons/Code.svg" alt="Code" class="w-5 h-5" />
+          </button>
+          <!-- Save Button -->
+          <button
+            type="button"
+            class="flex items-center rounded"
+            @click="savePost"
+          >
+            <img src="@/assets/icons/Save.svg" alt="Save" class="w-5 h-5" />
+          </button>
+        </div>
+        <div class="flex gap-4">
+          <!-- Trash Button -->
+          <button
+            type="button"
+            class="flex items-center rounded"
+            @click="deletePost"
+          >
+            <img src="@/assets/icons/Trash.svg" alt="Trash" class="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      <div v-if="isCodeMode">
+        <!-- If code mode is on, use markdown editor (like EasyMDE or another) -->
+        <easymde v-model="formData.notes" :options="editorOptions" />
+      </div>
+      <div v-else class="flex flex-col flex-grow">
+        <!-- Otherwise, use a regular textarea -->
+        <textarea
+          id="notes"
+          v-model="formData.notes"
+          class="textarea-field flex-grow resize-none p-2 border rounded"
+          placeholder="Enter notes here"
+        ></textarea>
+      </div>
     </section>
   </main>
-  <footer class="flex gap-6 justify-center items-center mt-6 py-4">
-    <button
-      type="button"
-      class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-neutral-200 border-neutral-500 text-[color:var(--sds-color-text-default-default)]"
-      @click="cancelEdit"
-    >
-      Cancel
-    </button>
-    <button
-      type="submit"
-      class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-zinc-800 border-zinc-800 text-white"
-      @click="submitForm"
-    >
-      Submit
-    </button>
-    <button
-      type="button"
-      class="overflow-hidden gap-2 self-stretch p-3 my-auto rounded-lg border border-solid bg-red-500 border-red-500 text-white"
-      @click="deletePost"
-    >
-      Delete
-    </button>
-  </footer>
 </template>
 
 <script>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, nextTick } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import { BACKEND_URL } from "../utils/config";
+import { BACKEND_URL } from "@/utils/config";
+import { convertToSeconds, formatSecondsToHMS } from "@/utils/time";
+import EasyMDE from "easymde";
+import "easymde/dist/easymde.min.css";
 
 export default {
   props: ["postId"], // Define props to receive postId
   setup(props) {
+    const player = ref(null);
+    const currentTime = ref(0);
     const router = useRouter(); // Initialize the router
     const formattedTime = ref("");
+    const isCodeMode = ref(false);
     const formData = ref({
       title: "",
       video_id: "",
@@ -207,6 +235,54 @@ export default {
       notes: "",
     });
 
+    const loadYouTubeIframeAPI = () => {
+      return new Promise((resolve) => {
+        if (window.YT) {
+          resolve(); // If the API is already loaded
+        } else {
+          const script = document.createElement("script");
+          script.src = "https://www.youtube.com/iframe_api";
+          script.onload = resolve;
+          document.head.appendChild(script);
+        }
+      });
+    };
+
+    const initializePlayer = async () => {
+      const iframeElement = document.getElementById("video-iframe");
+      await loadYouTubeIframeAPI(); // Wait for the API to load
+      if (window.YT && iframeElement) {
+        player.value = new window.YT.Player("video-iframe", {
+          events: {
+            onReady: () => {
+              console.log("YouTube player is ready");
+            },
+            onError: (error) => {
+              console.error("Error initializing YouTube player:", error);
+            },
+          },
+        });
+      } else {
+        console.error("YT.Player or iframe not found.");
+      }
+    };
+
+    watch(
+      () => formData.value.video_id,
+      (newVideoId) => {
+        if (newVideoId) {
+          nextTick(() => {
+            const iframe = document.getElementById("video-iframe");
+            if (iframe) {
+              initializePlayer();
+            } else {
+              console.error("Iframe not found.");
+            }
+          });
+        }
+      }
+    );
+
     const fetchPostData = async () => {
       try {
         const response = await axios.get(
@@ -218,36 +294,102 @@ export default {
       }
     };
 
-    const convertToSeconds = (time) => {
-      const [hours, minutes, seconds] = time.split(":").map(Number);
-      return hours * 3600 + minutes * 60 + seconds;
-    };
-
-    const getEmbedUrl = (videoId, platform, startTime) => {
+    const getEmbedUrl = (videoId, platform, startTime = "0:00") => {
       const startSeconds = convertToSeconds(startTime);
-      if (platform === "YouTube") {
-        return `https://www.youtube.com/embed/${videoId}?start=${startSeconds}&rel=0`;
-      } else if (platform === "Bilibili") {
-        return `https://player.bilibili.com/player.html?bvid=${videoId}&t=${startSeconds}&no_related=1`;
+
+      switch (platform) {
+        case "YouTube":
+          return `https://www.youtube.com/embed/${videoId}?start=${startSeconds}&rel=0&enablejsapi=1`;
+
+        case "Bilibili":
+          return `https://player.bilibili.com/player.html?bvid=${videoId}&t=${startSeconds}&no_related=1&enable_api=1&high_quality=1&danmaku=0`;
+
+        default:
+          console.warn("Unsupported platform:", platform);
+          return "";
       }
-      return "";
-    };
-    // Function to format time input
-    const formatTime = (value) => {
-      let input = value.replace(/[^0-9]/g, "");
-      if (input.length >= 2) input = input.slice(0, 2) + ":" + input.slice(2);
-      if (input.length >= 5) input = input.slice(0, 5) + ":" + input.slice(5);
-      return input.slice(0, 8);
     };
 
     // Watch the formattedTime ref for changes and update it accordingly
     watch(formattedTime, (newValue) => {
-      formData.value.sequence_start_time = formatTime(newValue);
-      formattedTime.value = formatTime(newValue);
+      formData.value.sequence_start_time = formatSecondsToHMS(newValue);
+      formattedTime.value = formatSecondsToHMS(newValue);
     });
 
-    const cancelEdit = () => {
-      router.push(`/view/${props.postId}`); // Navigate back to the view page of the current post
+    const getCurrentTime = () => {
+      const iframeElement = document.getElementById("video-iframe");
+
+      console.log("getCurrentTime invoked");
+
+      // Bilibili 平台处理逻辑
+      if (iframeElement && formData.value.video_platform === "Bilibili") {
+        console.log("Detected Bilibili platform");
+
+        // 向 iframe 发送获取当前时间的消息
+        iframeElement.contentWindow.postMessage(
+          {
+            event: "getCurrentTime",
+          },
+          "http://api.bilibili.com/"
+        );
+
+        console.log("Message sent to Bilibili iframe");
+
+        // 添加全局监听器，确保不重复绑定
+        const messageHandler = (event) => {
+          if (event.origin === "https://player.bilibili.com") {
+            console.log("Received data:", event.data);
+
+            if (event.data && event.data.event === "timeupdate") {
+              console.log("当前播放时间:", event.data.currentTime);
+              currentTime.value = event.data.currentTime;
+
+              const formattedTime = formatSecondsToHMS(event.data.currentTime);
+              formData.value.notes =
+                `${formData.value.notes.trim()}\n${formattedTime}`.trim();
+            }
+          }
+        };
+
+        // 移除之前的监听器（如果有）
+        window.removeEventListener("message", messageHandler);
+        // 添加新的监听器
+        window.addEventListener("message", messageHandler);
+      }
+
+      // YouTube 平台处理逻辑
+      else if (formData.value.video_platform === "YouTube") {
+        console.log("Detected YouTube platform");
+
+        if (player.value && typeof player.value.getCurrentTime === "function") {
+          const timeInSeconds = player.value.getCurrentTime();
+          currentTime.value = timeInSeconds;
+
+          const formattedTime = formatSecondsToHMS(timeInSeconds);
+          formData.value.notes =
+            `${formData.value.notes.trim()}\n${formattedTime}`.trim();
+        } else {
+          console.error(
+            "YouTube player instance or getCurrentTime method not found."
+          );
+        }
+      }
+
+      // 不支持的平台或错误情况
+      else {
+        console.error(
+          "Unsupported platform or iframe/player element unavailable."
+        );
+      }
+    };
+
+    const editorOptions = {
+      autoDownloadFontAwesome: true,
+      spellChecker: false,
+    };
+
+    const codeMode = () => {
+      isCodeMode.value = !isCodeMode.value; // Toggle the codeMode state
     };
 
     const deletePost = async () => {
@@ -272,7 +414,7 @@ export default {
       }
     };
 
-    const submitForm = async () => {
+    const savePost = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from localStorage
 
@@ -295,17 +437,23 @@ export default {
       }
     };
 
-    onMounted(() => {
+    onMounted(async () => {
       fetchPostData();
+      if (isCodeMode.value) {
+        new EasyMDE({ element: document.getElementById("notes") });
+      }
     });
 
     return {
       formattedTime,
       formData,
-      cancelEdit,
+      isCodeMode,
+      editorOptions,
+      codeMode,
       deletePost,
-      submitForm,
+      savePost,
       getEmbedUrl,
+      getCurrentTime,
     };
   },
 };

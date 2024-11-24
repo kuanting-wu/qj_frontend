@@ -47,7 +47,7 @@
           >
             <img
               loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/4728a160951595f6e5389159b3e8e714f7e82c751a59139a4751cce2c9ca8e56?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
+              src="@/assets/icons/Edit.svg"
               alt="Edit"
               class="object-contain w-6 h-6"
             />
@@ -57,7 +57,7 @@
         <div class="flex flex-col gap-4">
           <!-- User Info -->
           <div class="flex items-center gap-4">
-            <router-link :to="profileLink" class="flex gap-4 items-center">
+            <router-link   v-if="profileLink" :to="profileLink" class="flex gap-4 items-center">
               <img
                 :src="post.avatar_url"
                 alt="User avatar"
@@ -136,7 +136,8 @@
 import axios from "axios";
 import { ref, onMounted, watch, computed } from "vue";
 import { getUserFromToken } from "../utils/auth";
-import { BACKEND_URL } from "../utils/config";
+import { BACKEND_URL } from "@/utils/config";
+import { convertToSeconds } from "@/utils/time";
 
 export default {
   name: "PostDetail",
@@ -160,7 +161,9 @@ export default {
       belt: "",
     });
 
-    const profileLink = computed(() => `/profile/${post.value.user_name}`);
+    const profileLink = computed(() => {
+      return post.value.user_name ? `/profile/${post.value.user_name}` : null;
+    });
     const editPageLink = computed(() => `/edit/${props.postId}`);
     const currentUser = getUserFromToken();
 
@@ -176,11 +179,6 @@ export default {
     };
 
     watch(() => props.postId, fetchPostData);
-
-    const convertToSeconds = (time) => {
-      const [hours, minutes, seconds] = time.split(":").map(Number);
-      return hours * 3600 + minutes * 60 + seconds;
-    };
 
     const getEmbedUrl = (videoId, platform, startTime) => {
       const startSeconds = convertToSeconds(startTime);

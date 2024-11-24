@@ -7,9 +7,14 @@
     >
       Sign Up
     </h1>
-        <!-- Notification Box for Email Verification -->
-    <div v-if="showVerificationMessage" class="mt-6 w-80 p-4 bg-yellow-200 border border-yellow-400 rounded-lg text-center">
-      <p class="text-sm text-yellow-800">Please check your email for the verification link.</p>
+    <!-- Notification Box for Email Verification -->
+    <div
+      v-if="showVerificationMessage"
+      class="mt-6 w-80 p-4 bg-yellow-200 border border-yellow-400 rounded-lg text-center"
+    >
+      <p class="text-sm text-yellow-800">
+        Please check your email for the verification link.
+      </p>
     </div>
     <form
       @submit.prevent="handleSignUp"
@@ -107,12 +112,9 @@
           class="flex gap-3 items-center w-full leading-snug whitespace-nowrap font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-default-secondary)] text-[length:var(--sds-typography-body-size-medium)]"
         >
           <div class="flex shrink-0 self-stretch my-auto w-4 h-4"></div>
-          <a
-            href="#"
-            class="flex-1 shrink self-stretch my-auto underline basis-0 text-neutral-400"
-          >
+          <button @click="seeTerms" class="underline text-neutral-400">
             Terms
-          </a>
+          </button>
         </div>
       </div>
       <button
@@ -128,8 +130,6 @@
         Already have an account?
       </button>
     </form>
-
-
   </main>
 </template>
 
@@ -196,6 +196,10 @@ export default {
       router.push("/signin");
     };
 
+    const seeTerms = () => {
+      router.push("/terms");
+    };
+
     return {
       email,
       username,
@@ -205,6 +209,7 @@ export default {
       showVerificationMessage,
       handleSignUp,
       alreadyHaveAnAccount,
+      seeTerms,
     };
   },
 };

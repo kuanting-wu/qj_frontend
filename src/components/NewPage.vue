@@ -23,7 +23,11 @@
             placeholder="Enter video URL"
           />
         </div>
-        <button type="next" class="p-3 mt-4 rounded-lg bg-zinc-800 text-white">
+        <button
+          @click="nextForm"
+          type="next"
+          class="p-3 mt-4 rounded-lg bg-zinc-800 text-white"
+        >
           Next
         </button>
       </form>
@@ -76,7 +80,15 @@ export default {
         /(?:https?:\/\/)?(?:www\.)?bilibili\.com\/video\/(BV[0-9A-Za-z]+|av\d+)/
       );
       if (bilibiliMatch) {
-        formData.value.video_id = bilibiliMatch[1];
+        let videoId = bilibiliMatch[1];
+
+        // Check for &p=? in the URL
+        const pageMatch = url.match(/[?&]p=(\d+)/);
+        if (pageMatch) {
+          videoId += `&p=${pageMatch[1]}`; // Concatenate the page number to the video ID
+        }
+
+        formData.value.video_id = videoId;
         formData.value.video_platform = "Bilibili";
         return;
       }
@@ -102,7 +114,7 @@ export default {
 
         alert(response.data.message);
         // Navigate to the view page for the new post
-        router.push(`/view/${formData.value.id}`);
+        router.push(`/edit/${formData.value.id}`);
       } catch (error) {
         console.error("Error continuing to next form:", error);
         alert("Failed to add the new post.");
