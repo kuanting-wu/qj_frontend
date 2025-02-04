@@ -1,9 +1,63 @@
 <template>
-  <div class="flex flex-wrap gap-10 px-20 py-8 bg-white">
-    <aside
-      class="flex flex-col justify-start p-4 w-60 bg-white rounded-lg border border-solid border-zinc-300 font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-default-default)] text-[length:var(--sds-typography-body-size-medium)]"
-    >
-      <div class="flex flex-col justify-center w-auto">
+  <div
+    class="flex flex-wrap justify-center gap-0 px-8 py-8 bg-white md:gap-8 md:px-20 md:py-20"
+  >
+    <div class="flex flex-col gap-1 md:gap-4 justify-center w-auto">
+      <div class="flex items-center gap-2 px-0 py-0">
+        <!-- Filter Button -->
+        <button
+          class="flex items-center justify-center w-10 h-10 bg-gray-200 text-gray-700 rounded-lg md:hidden"
+          @click="isExpanded = !isExpanded"
+          aria-label="Toggle Filters"
+        >
+          <img
+            v-if="!isExpanded"
+            loading="lazy"
+            src="@/assets/icons/ChevronDown.svg"
+            alt="ChevronDown"
+            class="object-contain w-6 h-6"
+          />
+          <img
+            v-if="isExpanded"
+            loading="lazy"
+            src="@/assets/icons/ChevronUp.svg"
+            alt="ChevronUp"
+            class="object-contain w-6 h-6"
+          />
+        </button>
+
+        <!-- Search Bar -->
+        <form
+          class="flex overflow-hidden gap-2.5 items-center flex-1 whitespace-nowrap min-w-[200px] text-[color:var(--sds-color-text-default-tertiary)]"
+        >
+          <div
+            class="flex gap-6 items-center flex-1 px-4 py-2 bg-white rounded-full border border-solid border-zinc-300 min-h-[40px] text-[color:var(--sds-color-text-default-default)]"
+          >
+            <label for="searchInput" class="sr-only">Search</label>
+            <input
+              id="searchInput"
+              type="text"
+              v-model="formData.search"
+              class="flex-1 bg-transparent border-none outline-none"
+              placeholder="Title"
+              aria-label="Search"
+            />
+            <button @click.prevent="fetchPosts" aria-label="Search">
+              <img
+                loading="lazy"
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6a84d58b5b4d8ca5193fbdf5fb619cb016e069b7371bc4fa40ef7d5941ac53b1?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
+                class="object-contain w-6 h-6"
+                alt="Search icon"
+              />
+            </button>
+          </div>
+        </form>
+      </div>
+      <aside
+        v-if="isExpanded || !isMobile"
+        class="flex flex-col justify-center p-4 w-full bg-white rounded-lg border border-solid border-zinc-300 font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-default-default)] text-[length:var(--sds-typography-body-size-medium)] transition-all duration-300"
+        :class="{ 'h-auto': isExpanded, 'h-12 overflow-hidden': !isExpanded }"
+      >
         <div class="flex flex-col w-full">
           <label for="postBy" class="leading-snug">Post By</label>
           <input
@@ -75,113 +129,25 @@
             <option value="tc">Traditional Chinese</option>
           </select>
         </div>
-      </div>
-    </aside>
+        <div class="flex flex-col mt-2 w-full">
+          <label for="sortOption">Sort By</label>
+          <select
+            id="sortOption"
+            v-model="formData.sortOption"
+            @change="fetchPosts"
+            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300"
+          >
+            <option value="newToOld">New to Old</option>
+            <option value="oldToNew">Old to New</option>
+          </select>
+        </div>
+      </aside>
+    </div>
     <main
       class="flex flex-col flex-1 shrink self-start rounded-lg basis-8 min-w-[240px] max-md:max-w-full"
     >
-      <div
-        class="flex flex-wrap gap-10 justify-between items-center w-full leading-none font-[number:var(--sds-typography-body-font-weight-regular)] text-[length:var(--sds-typography-body-size-medium)] max-md:max-w-full"
-      >
-        <!-- Search form with placeholder -->
-        <form
-          class="flex overflow-hidden gap-2.5 items-center self-stretch my-auto whitespace-nowrap min-w-[240px] text-[color:var(--sds-color-text-default-tertiary)]"
-        >
-          <div
-            class="flex gap-6 items-center self-stretch my-auto min-w-[240px] w-[327px]"
-          >
-            <div
-              class="flex gap-2 items-center self-stretch px-4 py-2 my-auto bg-white rounded-full border border-solid border-zinc-300 min-h-[40px] text-[color:var(--sds-color-text-default-default)] w-full min-w-[200px]"
-            >
-              <label for="searchInput" class="sr-only">Search</label>
-              <input
-                id="searchInput"
-                type="text"
-                v-model="formData.search"
-                class="flex-1 shrink self-stretch my-auto basis-0 bg-transparent border-none outline-none"
-                placeholder="Search"
-                aria-label="Search"
-              />
-
-              <button @click.prevent="fetchPosts" aria-label="Search">
-                <img
-                  loading="lazy"
-                  src="https://cdn.builder.io/api/v1/image/assets/TEMP/6a84d58b5b4d8ca5193fbdf5fb619cb016e069b7371bc4fa40ef7d5941ac53b1?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-                  class="object-contain shrink-0 self-stretch my-auto aspect-square w-[25px]"
-                  alt="Search icon"
-                />
-              </button>
-            </div>
-          </div>
-          <router-link to="/new" aria-label="Create a new page">
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/a1a346bb6435f7307fd48c41414b143ec3e125a1e61bb152903251e3aecff500?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              class="object-contain shrink-0 self-stretch my-auto w-10 aspect-square"
-              alt=""
-            />
-          </router-link>
-        </form>
-        <nav
-          class="flex gap-2 items-start self-stretch my-auto min-w-[240px] text-[color:var(--sds-color-text-brand-tertiary)]"
-        >
-          <button
-            @click="toggleSort"
-            :class="[
-              'flex gap-2 items-center justify-center p-2 whitespace-nowrap rounded-lg',
-              formData.sortOption === 'oldToNew'
-                ? 'bg-zinc-800 text-neutral-100'
-                : 'bg-neutral-100',
-            ]"
-          >
-            <img
-              v-if="formData.sortOption === 'oldToNew'"
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/9d1653cc14e39c3046030201a565cd1b83ef71da82354897202129da1ce32c18?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              class="object-contain shrink-0 self-stretch my-auto w-4 aspect-square"
-              alt=""
-            />
-            <span
-              :class="
-                formData.sortOption === 'oldToNew'
-                  ? 'text-neutral-100'
-                  : 'text-current'
-              "
-            >
-              Old to New
-            </span>
-          </button>
-
-          <button
-            @click="toggleSort"
-            :class="[
-              'flex gap-2 items-center justify-center p-2 whitespace-nowrap rounded-lg',
-              formData.sortOption === 'newToOld'
-                ? 'bg-zinc-800 text-neutral-100'
-                : 'bg-neutral-100',
-            ]"
-          >
-            <img
-              v-if="formData.sortOption === 'newToOld'"
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/9d1653cc14e39c3046030201a565cd1b83ef71da82354897202129da1ce32c18?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-              class="object-contain shrink-0 self-stretch my-auto w-4 aspect-square"
-              alt=""
-            />
-            <span
-              :class="
-                formData.sortOption === 'newToOld'
-                  ? 'text-neutral-100'
-                  : 'text-current'
-              "
-            >
-              New to Old
-            </span>
-          </button>
-        </nav>
-      </div>
       <section
-        class="flex flex-wrap gap-6 items-center mt-12 w-full max-md:mt-10 max-md:max-w-full"
+        class="flex flex-wrap gap-6 items-center mt-1 md:mt-5 w-full max-md:mt-8 max-md:max-w-full"
       >
         <PreviewCard
           v-for="(post, index) in posts"
@@ -203,10 +169,11 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref, watch, onMounted } from "vue";
 import axios from "axios";
 import PreviewCard from "./PreviewCard.vue";
-import { BACKEND_URL } from "../utils/config"
+import { BACKEND_URL } from "../utils/config";
+import { getUserFromToken } from "../utils/auth";
 
 export default {
   components: {
@@ -215,7 +182,7 @@ export default {
   setup() {
     const formData = ref({
       search: "",
-      postBy: "",
+      postBy: "", // This will store the user's username
       movementType: "",
       startingPosition: "",
       endingPosition: "",
@@ -224,6 +191,10 @@ export default {
       sortOption: "newToOld",
     });
 
+    const posts = ref([]);
+    const isExpanded = ref(true);
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
     // Sorting logic
     const toggleSort = () => {
       formData.value.sortOption =
@@ -231,8 +202,7 @@ export default {
       fetchPosts(); // Re-fetch posts when sort changes
     };
 
-    const posts = ref([]);
-
+    // Fetch posts function
     const fetchPosts = async () => {
       try {
         const token = localStorage.getItem("accessToken"); // Assume token is stored in local storage
@@ -250,10 +220,20 @@ export default {
       }
     };
 
-    // Return everything to make it accessible in the template
+    // Fetch user's posts on mount
+    onMounted(() => {
+      const tokenUserName = getUserFromToken();
+      if (tokenUserName) {
+        formData.value.postBy = tokenUserName; // Set the username in the form data
+        fetchPosts(); // Fetch initial posts
+      }
+    });
+
     return {
       formData,
       posts,
+      isExpanded,
+      isMobile,
       toggleSort,
       fetchPosts,
     };
@@ -261,4 +241,22 @@ export default {
 };
 </script>
 
+<style scoped>
+/* Default border for larger screens */
+.border {
+  border-width: 1px; /* Default thickness */
+}
 
+/* Thinner border on mobile screens */
+@media (max-width: 400px) {
+  .flex-wrap {
+    padding: 0px; /* Reduced padding for mobile */
+  }
+  .border {
+    border-width: 0.5px; /* Reduced thickness for smaller screens */
+  }
+  .flex-wrap {
+    padding: 1rem; /* Reduced padding for mobile */
+  }
+}
+</style>

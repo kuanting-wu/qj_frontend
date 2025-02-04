@@ -1,9 +1,7 @@
 <template>
-  <main
-    class="flex flex-row gap-8 px-8 py-6 bg-white min-w-[240px] max-md:px-4"
-  >
+  <main class="flex flex-col lg:flex-row gap-8 px-8 py-8 bg-white">
     <!-- Left Section: Video and Metadata -->
-    <section class="flex flex-col flex-1 gap-6">
+    <section class="flex lg:w-2/3 flex-col gap-6">
       <!-- Video -->
       <iframe
         id="video-iframe"
@@ -18,10 +16,9 @@
         scrolling="no"
         allowfullscreen
         sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts"
-        class="aspect-video w-full"
+        class="aspect-video w-full rounded-lg shadow-sm"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       ></iframe>
-      
 
       <img
         v-else
@@ -48,105 +45,126 @@
             class="input-field w-2/3 border rounded"
             placeholder="Enter title"
           />
+          <button
+            class="flex items-center justify-center w-6 h-6 rounded-lg lg:hidden"
+            @click="isExpanded = !isExpanded"
+            aria-label="Toggle Filters"
+          >
+            <img
+              v-if="!isExpanded"
+              loading="lazy"
+              src="@/assets/icons/ChevronDown.svg"
+              alt="ChevronDown"
+              class="object-contain w-6 h-6"
+            />
+            <img
+              v-if="isExpanded"
+              loading="lazy"
+              src="@/assets/icons/ChevronUp.svg"
+              alt="ChevronUp"
+              class="object-contain w-6 h-6"
+            />
+          </button>
         </div>
 
-        <!-- Metadata in Grid -->
-        <div class="grid grid-cols-2 gap-x-24 gap-y-4">
-          <!-- Movement Type -->
-          <div class="flex justify-between items-center">
-            <label for="movementType" class="font-semibold"
-              >Movement Type</label
-            >
-            <input
-              id="movementType"
-              type="text"
-              v-model="formData.movement_type"
-              required
-              class="input-field w-1/2 border rounded"
-              placeholder="Enter movement type"
-            />
+        <div
+          v-if="isExpanded || !isMobile"
+          class="flex flex-col lg:flex-row gap-x-2 lg:gap-x-24"
+          :class="{
+            'h-auto': isExpanded,
+            'h-12 overflow-hidden': !isExpanded,
+          }"
+        >
+          <div class="flex flex-1 flex-col">
+            <div class="flex justify-between items-center">
+              <label for="movementType" class="font-semibold truncate"
+                >Movement Type</label
+              >
+              <input
+                id="movementType"
+                type="text"
+                v-model="formData.movement_type"
+                required
+                class="input-field w-1/2 border rounded"
+                placeholder="Enter movement type"
+              />
+            </div>
+            <div class="flex justify-between items-center">
+              <label for="startingPosition" class="font-semibold truncate"
+                >Starting Position</label
+              >
+              <input
+                id="startingPosition"
+                type="text"
+                v-model="formData.starting_position"
+                required
+                class="input-field w-1/2 border rounded"
+                placeholder="Enter starting position"
+              />
+            </div>
+            <div class="flex justify-between items-center">
+              <label for="endingPosition" class="font-semibold truncate"
+                >Ending Position</label
+              >
+              <input
+                id="endingPosition"
+                type="text"
+                v-model="formData.ending_position"
+                required
+                class="input-field w-1/2 border rounded"
+                placeholder="Enter ending position"
+              />
+            </div>
           </div>
-
-          <!-- Sequence Start Time -->
-          <div class="flex justify-between items-center">
-            <label for="sequenceStartTime" class="font-semibold"
-              >Sequence Start Time</label
-            >
-            <input
-              id="sequenceStartTime"
-              type="text"
-              v-model="formData.sequence_start_time"
-              class="input-field w-1/2 border rounded"
-              placeholder="hh:mm:ss"
-              maxlength="8"
-              required
-            />
-          </div>
-
-          <!-- Starting Position -->
-          <div class="flex justify-between items-center">
-            <label for="startingPosition" class="font-semibold"
-              >Starting Position</label
-            >
-            <input
-              id="startingPosition"
-              type="text"
-              v-model="formData.starting_position"
-              required
-              class="input-field w-1/2 border rounded"
-              placeholder="Enter starting position"
-            />
-          </div>
-
-          <!-- Public Status -->
-          <div class="flex justify-between items-center">
-            <label for="publicStatus" class="font-semibold"
-              >Public Status</label
-            >
-            <select
-              id="publicStatus"
-              v-model="formData.public_status"
-              required
-              class="input-field w-1/2 border rounded"
-            >
-              <option value="public">Public</option>
-              <option value="private">Private</option>
-            </select>
-          </div>
-
-          <!-- Ending Position -->
-          <div class="flex justify-between items-center">
-            <label for="endingPosition" class="font-semibold"
-              >Ending Position</label
-            >
-            <input
-              id="endingPosition"
-              type="text"
-              v-model="formData.ending_position"
-              required
-              class="input-field w-1/2 border rounded"
-              placeholder="Enter ending position"
-            />
-          </div>
-
-          <!-- Language -->
-          <div class="flex justify-between items-center">
-            <label for="language" class="font-semibold">Language</label>
-            <select
-              id="language"
-              v-model="formData.language"
-              required
-              class="input-field w-1/2 border rounded"
-            >
-              <option value="en">English</option>
-              <option value="tc">Traditional Chinese</option>
-            </select>
+          <div class="flex flex-1 flex-col">
+            <div class="flex justify-between items-center">
+              <label for="sequenceStartTime" class="font-semibold truncate"
+                >Sequence Start Time</label
+              >
+              <input
+                id="sequenceStartTime"
+                type="text"
+                v-model="formData.sequence_start_time"
+                class="input-field w-1/2 border rounded"
+                placeholder="hh:mm:ss"
+                maxlength="8"
+                required
+              />
+            </div>
+            <div class="flex justify-between items-center">
+              <label for="publicStatus" class="font-semibold truncate"
+                >Public Status</label
+              >
+              <select
+                id="publicStatus"
+                v-model="formData.public_status"
+                required
+                class="input-field w-1/2 border rounded"
+              >
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+            <div class="flex justify-between items-center">
+              <label for="language" class="font-semibold truncate"
+                >Language</label
+              >
+              <select
+                id="language"
+                v-model="formData.language"
+                required
+                class="input-field w-1/2 border rounded"
+              >
+                <option value="en">English</option>
+                <option value="tc">Traditional Chinese</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
     </section>
     <!-- Right Section: Notes --->
-    <section class="flex flex-col w-1/3 min-w-[240px] bg-white">
+    <section class="flex flex-col lg:w-1/3 bg-white">
       <div class="flex justify-between items-center mb-2">
         <div class="flex gap-4">
           <!-- Notes Label -->
@@ -192,7 +210,7 @@
         <!-- If code mode is on, use markdown editor (like EasyMDE or another) -->
         <easymde v-model="formData.notes" :options="editorOptions" />
       </div>
-      <div v-else class="flex flex-col flex-grow">
+      <div v-else class="flex flex-col flex-grow min-h-[240px]">
         <!-- Otherwise, use a regular textarea -->
         <textarea
           id="notes"
@@ -222,6 +240,8 @@ export default {
     const router = useRouter(); // Initialize the router
     const formattedTime = ref("");
     const isCodeMode = ref(false);
+    const isExpanded = ref(true);
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
     const formData = ref({
       title: "",
       video_id: "",
@@ -449,6 +469,8 @@ export default {
       formData,
       isCodeMode,
       editorOptions,
+      isExpanded,
+      isMobile,
       codeMode,
       deletePost,
       savePost,

@@ -632,7 +632,6 @@ app.delete('/api/deletepost/:id', authenticateToken, (req, res) => {
   });
 });
 
-
 app.get('/api/viewpost/:id', (req, res) => {
   const postId = req.params.id;
   const query = `
@@ -688,43 +687,46 @@ app.get('/api/search', authenticateToken, (req, res) => {
   const currentUser = req.user ? req.user.user_name : null;
   // SQL Query with conditional private post access
   const query = `
-    SELECT 
-      p.id,
-      p.video_id,
-      p.video_platform,
-      p.title,
-      pr.user_name,
-      pr.name,
-      pr.belt,
-      pr.avatar_url,
-      p.movement_type,
-      p.created_at
-    FROM posts p
-    JOIN profiles pr ON p.owner_name = pr.user_name
-    WHERE 1=1
-      AND (LOWER(p.title) LIKE LOWER(?) OR ? = '')
-      AND (LOWER(pr.name) LIKE LOWER(?) OR ? = '')
-      AND (LOWER(p.movement_type) LIKE LOWER(?) OR ? = '')
-      AND (LOWER(p.starting_position) LIKE LOWER(?) OR ? = '')
-      AND (LOWER(p.ending_position) LIKE LOWER(?) OR ? = '')
-      AND (LOWER(p.language) LIKE LOWER(?) OR ? = '')
-      AND (
-        -- Case 1: public_status is empty, show all public posts and private posts if owned by currentUser
-        (? = '' AND (LOWER(p.public_status) = 'public' OR (LOWER(p.public_status) = 'private' AND pr.user_name = ?)))
-        OR
-        -- Case 2: public_status is 'public', show only public posts
-        (? = 'Public' AND LOWER(p.public_status) = 'public')
-        OR
-        -- Case 3: public_status is 'private', show only private posts if owned by currentUser
-        (? = 'Private' AND LOWER(p.public_status) = 'private' AND pr.user_name = ?)
-      )
-    ORDER BY p.created_at ${sortOrder}
-  `;
+  SELECT 
+    p.id,
+    p.video_id,
+    p.video_platform,
+    p.title,
+    pr.user_name,
+    pr.name,
+    pr.belt,
+    pr.avatar_url,
+    p.movement_type,
+    p.created_at
+  FROM posts p
+  JOIN profiles pr ON p.owner_name = pr.user_name
+  WHERE 1=1
+    AND (LOWER(p.title) LIKE LOWER(?) OR ? = '')
+    AND (
+      LOWER(pr.name) = LOWER(?) OR
+      LOWER(pr.user_name) = LOWER(?) OR
+      ? = ''
+    )
+    AND (LOWER(p.movement_type) LIKE LOWER(?) OR ? = '')
+    AND (LOWER(p.starting_position) LIKE LOWER(?) OR ? = '')
+    AND (LOWER(p.ending_position) LIKE LOWER(?) OR ? = '')
+    AND (LOWER(p.language) LIKE LOWER(?) OR ? = '')
+    AND (
+      -- Case 1: public_status is empty, show all public posts and private posts if owned by currentUser
+      (? = '' AND (LOWER(p.public_status) = 'public' OR (LOWER(p.public_status) = 'private' AND pr.user_name = ?)))
+      OR
+      -- Case 2: public_status is 'public', show only public posts
+      (? = 'Public' AND LOWER(p.public_status) = 'public')
+      OR
+      -- Case 3: public_status is 'private', show only private posts if owned by currentUser
+      (? = 'Private' AND LOWER(p.public_status) = 'private' AND pr.user_name = ?)
+    )
+  ORDER BY p.created_at ${sortOrder}
+`;
 
-  // Preparing query parameters with flexible matching
   const queryParams = [
     `%${search}%`, search,
-    `%${postBy}%`, postBy,
+    postBy, postBy, postBy, // Exact match for pr.name or pr.user_name
     `%${movementType}%`, movementType,
     `%${startingPosition}%`, startingPosition,
     `%${endingPosition}%`, endingPosition,
@@ -760,7 +762,7 @@ app.get('/api/search', authenticateToken, (req, res) => {
   });
 });
 
-app.get('/proxy-image', async (req, res) => {
+app.get('/api/proxy-image', async (req, res) => {
   const { bvid } = req.query;
 
   if (!bvid) {

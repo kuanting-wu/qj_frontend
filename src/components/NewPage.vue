@@ -1,9 +1,9 @@
 <template>
   <main
-    class="flex items-center justify-center min-h-screen bg-white font-[number:var(--sds-typography-body-font-weight-regular)] text-[length:var(--sds-typography-body-size-medium)]"
+    class="flex items-top justify-center min-h-screen px-8 py-8 bg-white md:px-20 md:py-20 font-[number:var(--sds-typography-body-font-weight-regular)] text-[length:var(--sds-typography-body-size-medium)]"
   >
     <section
-      class="flex flex-col gap-4 items-center w-full max-w-md absolute top-[33%] translate-y-[-50%]"
+      class="flex flex-col gap-4 items-center w-full max-w-md"
     >
       <form
         @submit.prevent="submitForm"

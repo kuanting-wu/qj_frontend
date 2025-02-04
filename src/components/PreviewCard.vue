@@ -42,9 +42,9 @@
             class="flex gap-10 justify-between items-center w-full leading-snug font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-default-secondary)] text-[length:var(--sds-typography-body-size-small)]"
           >
             <router-link :to="`/profile/${user_name}`">
-              <div class="flex flex-col self-stretch my-auto">
-                <span>{{ name }}</span>
-                <span>{{ belt }}</span>
+              <div class="flex flex-col self-stretch my-auto truncate">
+                <span class="truncate" title="{{ name }}">{{ name }}</span>
+                <span class="truncate" title="{{ belt }}">{{ belt }}</span>
               </div>
             </router-link>
             <time class="self-stretch my-auto">{{ formattedDate }}</time>
@@ -94,7 +94,7 @@ export default {
     const getThumbnail = async () => {
       try {
         const response = await fetch(
-          `${BACKEND_URL}/proxy-image?bvid=${props.videoId}`
+          `${BACKEND_URL}/api/proxy-image?bvid=${props.videoId}`
         );
         console.log("Response data:", response.data);
 
@@ -154,6 +154,11 @@ export default {
   white-space: nowrap; /* Prevent wrapping */
   overflow: hidden; /* Hide the overflow text */
   text-overflow: ellipsis; /* Show ellipsis for overflowing text */
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
 

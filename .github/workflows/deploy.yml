@@ -1,0 +1,39 @@
+name: Deploy Vue.js to S3
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest  # The GitHub runner environment
+
+    permissions:
+      id-token: write         # Required for GitHub OIDC authentication
+      contents: read          # Needed for accessing repository contents
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # Checks out your repository code to the runner
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3  # Set up Node.js (use the version you need)
+        with:
+          node-version: '16'  # Or the version you are using
+
+      - name: Install dependencies
+        run: npm install  # Installs the dependencies of your Vue.js app
+
+      - name: Build the Vue.js project
+        run: npm run build  # Builds the Vue.js app for production
+
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::654654621599:role/${{ secrets.AWS_GITHUB_ROLE }}
+          role-session-name: github-action
+          aws-region: us-east-1  # Set your AWS region
+
+      - name: Deploy to S3
+        run: aws s3 sync dist/ s3://${{ secrets.S3_BUCKET_NAME }} --acl public-read --delete
