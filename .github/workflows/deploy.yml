@@ -29,7 +29,7 @@ jobs:
         run: npm run build  # Builds the Vue.js app for production
 
       - name: Configure AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::654654621599:role/${{ secrets.AWS_GITHUB_ROLE }}
           role-session-name: github-action
