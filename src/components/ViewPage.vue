@@ -208,7 +208,7 @@ export default {
     const fetchPostData = async () => {
       try {
         const response = await axios.get(
-          `${BACKEND_URL}/api/viewpost/${props.postId}`
+          `${BACKEND_URL}/viewpost/${props.postId}`
         );
         post.value = response.data;
       } catch (error) {

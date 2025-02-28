@@ -207,7 +207,7 @@ export default {
       try {
         const token = localStorage.getItem("accessToken"); // Assume token is stored in local storage
 
-        const { data } = await axios.get(`${BACKEND_URL}/api/search`, {
+        const { data } = await axios.get(`${BACKEND_URL}/search`, {
           params: formData.value, // Pass query params as required by backend
           headers: {
             Authorization: `Bearer ${token}`, // Attach token for authentication

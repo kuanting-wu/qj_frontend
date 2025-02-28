@@ -94,7 +94,7 @@ export default {
     const getThumbnail = async () => {
       try {
         const response = await fetch(
-          `${BACKEND_URL}/api/proxy-image?bvid=${props.videoId}`
+          `${BACKEND_URL}/proxy-image?bvid=${props.videoId}`
         );
         console.log("Response data:", response.data);
 

@@ -69,7 +69,7 @@ export default {
     async verifyEmail() {
       const token = this.$route.query.token;
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/verify-email`, {
+        const response = await axios.get(`${BACKEND_URL}/verify-email`, {
           params: { token },
         });
         if (response.status !== 200) {

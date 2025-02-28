@@ -306,7 +306,7 @@ export default {
     const fetchPostData = async () => {
       try {
         const response = await axios.get(
-          `${BACKEND_URL}/api/viewpost/${props.postId}`
+          `${BACKEND_URL}/viewpost/${props.postId}`
         );
         formData.value = response.data;
       } catch (error) {
@@ -417,7 +417,7 @@ export default {
         const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from localStorage
 
         const response = await axios.delete(
-          `${BACKEND_URL}/api/deletepost/${props.postId}`, // Corrected template string
+          `${BACKEND_URL}/deletepost/${props.postId}`, // Corrected template string
           {
             headers: {
               Authorization: `Bearer ${accessToken}`, // Pass access token in Authorization header
@@ -439,7 +439,7 @@ export default {
         const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from localStorage
 
         const response = await axios.put(
-          `${BACKEND_URL}/api/editpost/${props.postId}`, // Corrected template string
+          `${BACKEND_URL}/editpost/${props.postId}`, // Corrected template string
           formData.value,
           {
             headers: {

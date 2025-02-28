@@ -171,7 +171,7 @@ export default {
       const sanitizedUsername = sanitizeUsername(username.value); // Sanitize username
 
       try {
-        const response = await axios.post(`${BACKEND_URL}/api/signup`, {
+        const response = await axios.post(`${BACKEND_URL}/signup`, {
           name: sanitizedUsername, // Use sanitized username
           email: email.value,
           password: password.value,

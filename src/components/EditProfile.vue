@@ -95,7 +95,7 @@ export default {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `${BACKEND_URL}/api/profile/${props.userName}`
+          `${BACKEND_URL}/profile/${props.userName}`
         );
         profile.value = response.data;
       } catch (error) {
@@ -107,7 +107,7 @@ export default {
       try {
         const accessToken = localStorage.getItem("accessToken");
         await axios.put(
-          `${BACKEND_URL}/api/editprofile/${props.userName}`,
+          `${BACKEND_URL}/editprofile/${props.userName}`,
           profile.value,
           {
             headers: {

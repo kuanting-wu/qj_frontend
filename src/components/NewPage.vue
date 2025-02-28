@@ -103,7 +103,7 @@ export default {
         const accessToken = localStorage.getItem("accessToken"); // Retrieve access token from localStorage
 
         const response = await axios.post(
-          `${BACKEND_URL}/api/newpost/${formData.value.id}`, // Include the post ID in the URL
+          `${BACKEND_URL}/newpost/${formData.value.id}`, // Include the post ID in the URL
           formData.value,
           {
             headers: {

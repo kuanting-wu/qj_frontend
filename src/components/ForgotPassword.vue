@@ -70,7 +70,7 @@ export default {
 
       // Proceed with the API call if the email format is valid
       try {
-        const response = await axios.post(`${BACKEND_URL}/api/forgot-password`, {
+        const response = await axios.post(`${BACKEND_URL}/forgot-password`, {
           email: this.email,
         });
         if (response.status === 200) {

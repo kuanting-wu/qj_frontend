@@ -94,7 +94,7 @@ export default {
 
       const token = route.query.token; // Get the reset token from the URL
       try {
-        const response = await axios.post(`${BACKEND_URL}/api/reset-password`, {
+        const response = await axios.post(`${BACKEND_URL}/reset-password`, {
           token,
           newPassword: newPassword.value,
         });

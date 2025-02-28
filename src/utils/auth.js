@@ -20,7 +20,7 @@ export function isTokenValid() {
 
 export function refreshAccessToken(refreshToken) {
   return new Promise((resolve, reject) => {
-    axios.post(`${BACKEND_URL}/api/refresh-token`, { refreshToken })
+    axios.post(`${BACKEND_URL}/refresh-token`, { refreshToken })
       .then(response => {
         const { accessToken } = response.data;
         resolve(accessToken); // Resolve with the new access token

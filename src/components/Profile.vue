@@ -62,7 +62,7 @@ export default {
     const fetchProfile = async () => {
       try {
         const response = await axios.get(
-          `${BACKEND_URL}/api/profile/${props.userName}`
+          `${BACKEND_URL}/viewprofile/${props.userName}`
         );
         profile.value = response.data;
       } catch (error) {

@@ -85,7 +85,7 @@ export default {
 
     const handleSignIn = async () => {
       try {
-        const response = await axios.post(`${BACKEND_URL}/api/signin`, {
+        const response = await axios.post(`${BACKEND_URL}/signin`, {
           email: email.value,
           password: password.value,
         });
