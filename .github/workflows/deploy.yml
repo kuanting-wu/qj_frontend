@@ -31,7 +31,7 @@ jobs:
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::654654621599:role/${{ secrets.AWS_GITHUB_ROLE }}
+          role-to-assume: ${{ secrets.AWS_GITHUB_ROLE }}
           role-session-name: github-action
           aws-region: us-east-1  # Set your AWS region
 
