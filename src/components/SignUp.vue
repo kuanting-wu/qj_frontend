@@ -172,7 +172,7 @@ export default {
 
       try {
         const response = await axios.post(`${BACKEND_URL}/signup`, {
-          name: sanitizedUsername, // Use sanitized username
+          username: sanitizedUsername, // Use username instead of name to match backend
           email: email.value,
           password: password.value,
         });

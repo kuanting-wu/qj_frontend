@@ -4,6 +4,12 @@ const webpack = require('webpack')
 module.exports = defineConfig({
   transpileDependencies: true,
   lintOnSave: false,
+  
+  // Development server configuration
+  devServer: {
+    // No proxy setup - direct API calls to backend
+  },
+  
   configureWebpack: {
     plugins: [
       new webpack.DefinePlugin({

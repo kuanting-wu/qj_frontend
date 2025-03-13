@@ -1,153 +1,369 @@
 <template>
   <div
-    class="flex flex-wrap justify-center gap-0 px-8 py-8 bg-white md:gap-8 md:px-20 md:py-20"
+    class="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative transition-colors duration-200 pt-[60px]"
   >
-    <div class="flex flex-col gap-1 md:gap-4 justify-center w-auto">
-      <div class="flex items-center gap-2 px-0 py-0">
-        <!-- Filter Button -->
-        <button
-          class="flex items-center justify-center w-10 h-10 bg-gray-200 text-gray-700 rounded-lg md:hidden"
-          @click="isExpanded = !isExpanded"
-          aria-label="Toggle Filters"
-        >
-          <img
-            v-if="!isExpanded"
-            loading="lazy"
-            src="@/assets/icons/ChevronDown.svg"
-            alt="ChevronDown"
-            class="object-contain w-6 h-6"
-          />
-          <img
-            v-if="isExpanded"
-            loading="lazy"
-            src="@/assets/icons/ChevronUp.svg"
-            alt="ChevronUp"
-            class="object-contain w-6 h-6"
-          />
-        </button>
-
-        <!-- Search Bar -->
-        <form
-          class="flex overflow-hidden gap-2.5 items-center flex-1 whitespace-nowrap min-w-[200px] text-[color:var(--sds-color-text-default-tertiary)]"
-        >
-          <div
-            class="flex gap-6 items-center flex-1 px-4 py-2 bg-white rounded-full border border-solid border-zinc-300 min-h-[40px] text-[color:var(--sds-color-text-default-default)]"
-          >
+    <!-- Mobile menu toggle -->
+    <button
+      class="md:hidden fixed top-4 left-4 z-20 flex items-center justify-center w-10 h-10 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-md shadow-sm border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+      @click="isSidebarOpen = !isSidebarOpen"
+      aria-label="Toggle Sidebar"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    
+    <!-- Sidebar -->
+    <div 
+      class="fixed top-[60px] left-0 z-10 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-[calc(100%-60px)] overflow-y-auto flex flex-col transition-all duration-300 ease-in-out"
+      :class="{
+        'translate-x-0': isSidebarOpen || !isMobile, 
+        '-translate-x-full': !isSidebarOpen && isMobile,
+        'w-80': isPanelExpanded,
+        'w-[0px]': !isPanelExpanded
+      }"
+    >
+      <!-- Header with search or toggle button -->
+      <div class="border-b border-gray-200 dark:border-gray-700 dark:bg-gray-900 transition-colors duration-300">
+        <!-- Expanded View with Search Bar -->
+        <div v-if="isPanelExpanded" class="p-4">
+          <div class="relative w-full">
             <label for="searchInput" class="sr-only">Search</label>
             <input
               id="searchInput"
               type="text"
               v-model="formData.search"
-              class="flex-1 bg-transparent border-none outline-none"
-              placeholder="Title"
+              @keyup.enter="fetchPosts"
+              class="py-2 px-4 pr-12 w-full rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors text-sm"
+              placeholder="Search titles, positions, techniques, etc."
               aria-label="Search"
             />
-            <button @click.prevent="fetchPosts" aria-label="Search">
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/6a84d58b5b4d8ca5193fbdf5fb619cb016e069b7371bc4fa40ef7d5941ac53b1?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-                class="object-contain w-6 h-6"
-                alt="Search icon"
-              />
+            <button 
+              @click.prevent="fetchPosts" 
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 rounded-md bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300 transition duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Search"
+            >
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </button>
           </div>
-        </form>
+        </div>
+        
+        <!-- No collapsed view toggle button, using the top header button instead -->
       </div>
+      
+      <!-- Filter section -->
       <aside
-        v-if="isExpanded || !isMobile"
-        class="flex flex-col justify-center p-4 w-full bg-white rounded-lg border border-solid border-zinc-300 font-[number:var(--sds-typography-body-font-weight-regular)] text-[color:var(--sds-color-text-default-default)] text-[length:var(--sds-typography-body-size-medium)] transition-all duration-300"
-        :class="{ 'h-auto': isExpanded, 'h-12 overflow-hidden': !isExpanded }"
+        v-if="isPanelExpanded"
+        class="flex-1 p-4 overflow-y-auto dark:bg-gray-900 transition-all duration-300"
       >
-        <div class="flex flex-col w-full">
-          <label for="postBy" class="leading-snug">Post By</label>
-          <input
-            id="postBy"
-            type="text"
-            v-model="formData.postBy"
-            placeholder="Enter poster's name"
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300"
-            aria-label="Post By"
-          />
+        <h3 class="text-base font-medium text-gray-800 dark:text-gray-200 mb-4 pb-2 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">Filter Options</h3>
+        <!-- Post By field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="postBy" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Post By</label>
+          </div>
+          <div class="relative">
+            <input
+              id="postBy"
+              type="text"
+              v-model="formData.postBy"
+              placeholder="Enter poster's name"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+              aria-label="Post By"
+            />
+          </div>
         </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="movementType" class="leading-6">Movement Type</label>
-          <input
-            id="movementType"
-            type="text"
-            v-model="formData.movementType"
-            placeholder="Enter movement type"
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300"
-            aria-label="Movement Type"
-          />
+
+        <!-- Movement Type field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="movementType" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Movement Type</label>
+          </div>
+          <div class="relative">
+            <select
+              id="movementType"
+              v-model="formData.movementType"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="">Any</option>
+              <option value="Pass">Pass</option>
+              <option value="Sweep">Sweep</option>
+              <option value="Escape">Escape</option>
+              <option value="Transition">Transition</option>
+              <option value="Re-Guard">Re-Guard</option>
+              <option value="Submission">Submission</option>
+              <option value="Submission Escape">Submission Escape</option>
+              <option value="Takedown">Takedown</option>
+              <option value="Takedown Defense">Takedown Defense</option>
+              <option value="Guard Pull">Guard Pull</option>
+              <option value="Scramble">Scramble</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="startingPosition" class="leading-6"
-            >Starting Position</label
-          >
-          <input
-            id="startingPosition"
-            type="text"
-            v-model="formData.startingPosition"
-            placeholder="Enter starting position"
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300"
-            aria-label="Starting Position"
-          />
+
+        <!-- Starting Position field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="startingPosition" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Starting Position</label>
+          </div>
+          <div class="relative">
+            <select
+              id="startingPosition"
+              v-model="formData.startingPosition"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="">Any</option>
+              <option value="Standing">Standing</option>
+              <option value="Closed Guard">Closed Guard</option>
+              <option value="Open Guard">Open Guard</option>
+              <option value="Half Guard">Half Guard</option>
+              <option value="Deep Half Guard">Deep Half Guard</option>
+              <option value="Side Control">Side Control</option>
+              <option value="Knee on Belly">Knee on Belly</option>
+              <option value="North-South">North-South</option>
+              <option value="Mount">Mount</option>
+              <option value="Back Control">Back Control</option>
+              <option value="Turtle">Turtle</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="endingPosition" class="leading-6">Ending Position</label>
-          <input
-            id="endingPosition"
-            type="text"
-            v-model="formData.endingPosition"
-            placeholder="Enter ending position"
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300"
-            aria-label="Ending Position"
-          />
+
+        <!-- Starting Position Type field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="startingTopBottom" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Starting Position Type</label>
+          </div>
+          <div class="relative">
+            <select
+              id="startingTopBottom"
+              v-model="formData.startingTopBottom"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="">Any</option>
+              <option value="TOP">Top</option>
+              <option value="BOTTOM">Bottom</option>
+              <option value="NEUTRAL">Neutral</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="publicStatus">Public Status</label>
-          <select
-            id="publicStatus"
-            v-model="formData.publicStatus"
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300"
-          >
-            <option value=""></option>
-            <option value="public">Public</option>
-            <option value="private">Private</option>
-          </select>
+
+        <!-- Ending Position field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="endingPosition" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Ending Position</label>
+          </div>
+          <div class="relative">
+            <select
+              id="endingPosition"
+              v-model="formData.endingPosition"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="">Any</option>
+              <option value="Standing">Standing</option>
+              <option value="Closed Guard">Closed Guard</option>
+              <option value="Open Guard">Open Guard</option>
+              <option value="Half Guard">Half Guard</option>
+              <option value="Deep Half Guard">Deep Half Guard</option>
+              <option value="Side Control">Side Control</option>
+              <option value="Knee on Belly">Knee on Belly</option>
+              <option value="North-South">North-South</option>
+              <option value="Mount">Mount</option>
+              <option value="Back Control">Back Control</option>
+              <option value="Turtle">Turtle</option>
+              <option value="Submission Finish">Submission Finish</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="language">Language</label>
-          <select
-            id="language"
-            v-model="formData.language"
-            required
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300"
-          >
-            <option value=""></option>
-            <option value="en">English</option>
-            <option value="tc">Traditional Chinese</option>
-          </select>
+
+        <!-- Ending Position Type field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="endingTopBottom" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Ending Position Type</label>
+          </div>
+          <div class="relative">
+            <select
+              id="endingTopBottom"
+              v-model="formData.endingTopBottom"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="">Any</option>
+              <option value="TOP">Top</option>
+              <option value="BOTTOM">Bottom</option>
+              <option value="NEUTRAL">Neutral</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col mt-2 w-full">
-          <label for="sortOption">Sort By</label>
-          <select
-            id="sortOption"
-            v-model="formData.sortOption"
-            @change="fetchPosts"
-            class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 mt-1 w-full leading-none whitespace-nowrap bg-white rounded-lg border border-solid border-zinc-300"
-          >
-            <option value="newToOld">New to Old</option>
-            <option value="oldToNew">Old to New</option>
-          </select>
+
+        <!-- Gi/No-Gi field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="giNogi" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Gi / No-Gi</label>
+          </div>
+          <div class="relative">
+            <select
+              id="giNogi"
+              v-model="formData.giNogi"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="">Any</option>
+              <option value="Gi">Gi</option>
+              <option value="No-Gi">No-Gi</option>
+              <option value="Both">Both</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Practitioner/Instructor field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="practitioner" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Practitioner / Instructor</label>
+          </div>
+          <div class="relative">
+            <input
+              id="practitioner"
+              type="text"
+              v-model="formData.practitioner"
+              placeholder="Search by practitioner name"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            />
+          </div>
+        </div>
+
+        <!-- Public Status field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="publicStatus" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Public Status</label>
+          </div>
+          <div class="relative">
+            <select
+              id="publicStatus"
+              v-model="formData.publicStatus"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="">Any</option>
+              <option value="public">Public</option>
+              <option value="subscribers">Subscribers Only</option>
+              <option value="private">Private</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Language field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="language" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Language</label>
+          </div>
+          <div class="relative">
+            <select
+              id="language"
+              v-model="formData.language"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="">Any</option>
+              <option value="English">English</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Traditional Chinese">Traditional Chinese</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sort By field -->
+        <div class="mb-4">
+          <div class="flex justify-between mb-1.5">
+            <label for="sortOption" class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Sort By</label>
+          </div>
+          <div class="relative">
+            <select
+              id="sortOption"
+              v-model="formData.sortOption"
+              @change="fetchPosts"
+              class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md text-sm appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors duration-200 border border-transparent dark:border-gray-600"
+            >
+              <option value="newToOld">New to Old</option>
+              <option value="oldToNew">Old to New</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg class="h-4 w-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          </div>
         </div>
       </aside>
     </div>
     <main
-      class="flex flex-col flex-1 shrink self-start rounded-lg basis-8 min-w-[240px] max-md:max-w-full"
+      class="flex flex-col flex-1 p-6 overflow-y-auto h-full transition-all duration-300 bg-gray-50 dark:bg-gray-900"
+      :style="{
+        marginLeft: computeMainMargin
+      }"
     >
+      <!-- Loading state -->
+      <div v-if="isLoading" class="flex justify-center items-center py-10 w-full">
+        <div class="animate-spin h-10 w-10 border-4 border-blue-500 dark:border-blue-400 rounded-full border-t-transparent"></div>
+      </div>
+      
+      <!-- Error message -->
+      <div v-else-if="errorMessage" class="flex flex-col justify-center items-center py-10 w-full">
+        <div class="text-red-500 dark:text-red-400 font-medium mb-2">{{ errorMessage }}</div>
+        <button 
+          @click="fetchPosts"
+          class="px-4 py-2 bg-black dark:bg-gray-800 text-white rounded hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          Try Again
+        </button>
+      </div>
+      
+      <!-- Empty state -->
+      <div v-else-if="posts.length === 0" class="flex justify-center items-center py-10 w-full">
+        <p class="text-gray-500 dark:text-gray-400">No posts found. Try adjusting your search criteria.</p>
+      </div>
+      
+      <!-- Post list -->
       <section
-        class="flex flex-wrap gap-6 items-center mt-1 md:mt-5 w-full max-md:mt-8 max-md:max-w-full"
+        v-else
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-3 w-full"
       >
         <PreviewCard
           v-for="(post, index) in posts"
@@ -157,9 +373,10 @@
           :videoId="post.video_id"
           :videoPlatform="post.video_platform"
           :title="post.title"
-          :user_name="post.user_name"
+          :username="post.username"
           :name="post.name"
           :belt="post.belt"
+          :academy="post.academy"
           :avatarSrc="post.avatar_url"
           :createdAt="post.created_at"
         />
@@ -169,7 +386,7 @@
 </template>
 
 <script>
-import { ref, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import axios from "axios";
 import PreviewCard from "./PreviewCard.vue";
 import { BACKEND_URL } from "../utils/config";
@@ -185,7 +402,11 @@ export default {
       postBy: "", // This will store the user's username
       movementType: "",
       startingPosition: "",
+      startingTopBottom: "",
       endingPosition: "",
+      endingTopBottom: "",
+      giNogi: "",
+      practitioner: "", // New field for instructor/practitioner
       publicStatus: "",
       language: "",
       sortOption: "newToOld",
@@ -193,8 +414,28 @@ export default {
 
     const posts = ref([]);
     const isExpanded = ref(true);
+    const isSidebarOpen = ref(!window.matchMedia("(max-width: 768px)").matches);
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    const isLoading = ref(false);
+    const errorMessage = ref("");
+    const isPanelExpanded = ref(true); // Controls the filter panel visibility
 
+    // Compute the correct margin for the main content based on sidebar state
+    const computeMainMargin = computed(() => {
+      if (!isSidebarOpen.value && (isMobile || !isPanelExpanded.value)) {
+        return '0px';
+      } else if (isPanelExpanded.value) {
+        return '320px'; // 80px * 4 = 320px (tailwind w-80 = 20rem = 320px)
+      } else {
+        return '60px';
+      }
+    });
+
+    // Toggle the entire filter panel (like ChatGPT)
+    const toggleFilterPanel = () => {
+      isPanelExpanded.value = !isPanelExpanded.value;
+    };
+    
     // Sorting logic
     const toggleSort = () => {
       formData.value.sortOption =
@@ -204,36 +445,88 @@ export default {
 
     // Fetch posts function
     const fetchPosts = async () => {
+      isLoading.value = true;
+      errorMessage.value = "";
+      
       try {
+        console.log("Fetching posts with params:", formData.value);
         const token = localStorage.getItem("accessToken"); // Assume token is stored in local storage
 
-        const { data } = await axios.get(`${BACKEND_URL}/search`, {
+        // Make the API call
+        const response = await axios.get(`${BACKEND_URL}/search`, {
           params: formData.value, // Pass query params as required by backend
           headers: {
-            Authorization: `Bearer ${token}`, // Attach token for authentication
+            Authorization: token ? `Bearer ${token}` : undefined, // Attach token if available
           },
         });
 
-        posts.value = data.posts; // Update posts data with response
+        console.log("Search API response:", response.data);
+        posts.value = response.data.posts || []; // Update posts data with response
+        console.log(`Loaded ${posts.value.length} posts`);
       } catch (error) {
         console.error("Error fetching posts:", error);
+        
+        // Extract detailed error information
+        if (error.response) {
+          // Server responded with a status code outside of 2xx range
+          console.error("Server error:", {
+            status: error.response.status,
+            data: error.response.data,
+          });
+          errorMessage.value = error.response.data?.error || 
+            `Server error (${error.response.status})`;
+        } else if (error.request) {
+          // Request was made but no response received (network error)
+          console.error("Network error - no response received");
+          errorMessage.value = "Network error - couldn't connect to server";
+        } else {
+          // Error in setting up the request
+          console.error("Request error:", error.message);
+          errorMessage.value = "Error sending request";
+        }
+      } finally {
+        isLoading.value = false;
       }
     };
 
+    // Sidebar toggle event handler
+    const handleSidebarToggle = (event) => {
+      isPanelExpanded.value = event.detail.expanded;
+    };
+    
+    // Set up and tear down sidebar toggle event listener
+    const listenForSidebarToggle = () => {
+      window.addEventListener('toggle-sidebar', handleSidebarToggle);
+    };
+    
+    // Clean up event listeners when component is unmounted
+    onBeforeUnmount(() => {
+      window.removeEventListener('toggle-sidebar', handleSidebarToggle);
+    });
+
     // Fetch user's posts on mount
     onMounted(() => {
-      const tokenUserName = getUserFromToken();
-      if (tokenUserName) {
-        formData.value.postBy = tokenUserName; // Set the username in the form data
+      const username = getUserFromToken();
+      if (username) {
+        formData.value.postBy = username; // Set the username in the form data
         fetchPosts(); // Fetch initial posts
       }
+      
+      // Set up listener for sidebar toggle events
+      listenForSidebarToggle();
     });
 
     return {
       formData,
       posts,
       isExpanded,
+      isSidebarOpen,
       isMobile,
+      isLoading,
+      errorMessage,
+      isPanelExpanded,
+      computeMainMargin,
+      toggleFilterPanel,
       toggleSort,
       fetchPosts,
     };
@@ -245,6 +538,18 @@ export default {
 /* Default border for larger screens */
 .border {
   border-width: 1px; /* Default thickness */
+}
+
+/* Hide scrollbar for various browsers while maintaining functionality */
+.overflow-y-auto::-webkit-scrollbar,
+aside::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+aside, 
+.overflow-y-auto {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
 /* Thinner border on mobile screens */

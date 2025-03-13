@@ -1,5 +1,5 @@
 <template>
-  <main class="flex flex-col min-h-screen px-8 py-8 bg-white dark:bg-gray-900 transition-colors duration-200">
+  <main class="flex flex-col h-screen px-8 py-8 bg-white dark:bg-gray-900 transition-colors duration-200">
     <!-- Resizable container -->
     <div class="flex flex-col lg:flex-row h-full overflow-hidden">
       <!-- Left Section: Video and Metadata with resizable width -->
@@ -144,7 +144,7 @@
             </div>
             
             <div class="mb-4">
-              <label for="giNogi" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-200"
+              <label for="giNogi" class="block text-sm font-medium text-gray-700 mb-1"
                 >Gi / No-Gi</label
               >
               <select
@@ -160,7 +160,7 @@
             </div>
             
             <div class="mb-4">
-              <label for="practitioner" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-200"
+              <label for="practitioner" class="block text-sm font-medium text-gray-700 mb-1"
                 >Practitioner / Instructor</label
               >
               <input
@@ -176,7 +176,7 @@
           <!-- Column 2: Starting/Ending Positions -->
           <div class="flex flex-1 flex-col">
             <div class="mb-4">
-              <label for="startingPosition" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-200"
+              <label for="startingPosition" class="block text-sm font-medium text-gray-700 mb-1"
                 >Starting Position</label
               >
               <select
@@ -241,7 +241,7 @@
             </div>
             
             <div class="mb-4">
-              <label for="endingTopBottom" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-200"
+              <label for="endingTopBottom" class="block text-sm font-medium text-gray-700 mb-1"
                 >Ending Position Type</label
               >
               <select
@@ -260,7 +260,7 @@
           <!-- Column 3: Sequence Time, Public Status, Language -->
           <div class="flex flex-1 flex-col">
             <div class="mb-4">
-              <label for="sequenceStartTime" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-200"
+              <label for="sequenceStartTime" class="block text-sm font-medium text-gray-700 mb-1"
                 >Sequence Start Time</label
               >
               <div class="flex items-center">
@@ -268,14 +268,14 @@
                   id="sequenceStartTime"
                   type="text"
                   v-model="formData.sequence_start_time"
-                  class="block w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 rounded-l-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 sm:text-sm"
+                  class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   placeholder="hh:mm:ss"
                   maxlength="8"
                   required
                 />
                 <button
                   type="button"
-                  class="px-3 py-2 bg-black dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600 text-white rounded-r-md border border-black dark:border-gray-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
+                  class="px-3 py-2 bg-black hover:bg-gray-800 text-white rounded-r-md border border-black shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition duration-150"
                   @click="setCurrentTimeAsStartTime"
                   title="Use current video time"
                 >
@@ -287,7 +287,7 @@
             </div>
             
             <div class="mb-4">
-              <label for="publicStatus" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-200"
+              <label for="publicStatus" class="block text-sm font-medium text-gray-700 mb-1"
                 >Public Status</label
               >
               <select
@@ -324,17 +324,24 @@
       
       <!-- Resizable Divider -->
       <div 
-        class="hidden lg:block w-1 h-full cursor-col-resize hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-150"
+        class="hidden lg:block w-2 h-full bg-gray-200 cursor-col-resize hover:bg-gray-400 transition-colors duration-150"
         @mousedown="startResize"
       ></div>
       
       <!-- Right Section: Notes with responsive width -->
       <section 
-        class="flex flex-col bg-gray-50 dark:bg-gray-800 h-full overflow-auto transition-colors duration-200"
+        class="flex flex-col bg-white h-full overflow-auto"
         :style="{ width: (100 - videoWidth) + '%' }"
       >
+        <div class="flex justify-between items-center mb-2 pt-2 px-4">
+          <div class="flex gap-4">
+            <!-- Notes Label -->
+            <h2 class="font-semibold">Notes</h2>
+          </div>
+        </div>
+
         <!-- New Markdown Editor -->
-        <div class="flex-grow p-4 overflow-auto">
+        <div class="flex-grow px-4 pb-4 overflow-auto">
           <div v-if="loadingMarkdown" class="flex justify-center items-center py-4">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
           </div>
@@ -776,18 +783,6 @@ export default {
 </script>
 
 <style scoped>
-/* Hide scrollbar for various browsers while maintaining functionality */
-.overflow-y-auto::-webkit-scrollbar,
-section::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
-}
-
-section, 
-.overflow-y-auto {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;

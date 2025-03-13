@@ -8,6 +8,7 @@ import ForgotPassword from '../components/ForgotPassword.vue'
 import ResetPassword from '../components/ResetPassword.vue'
 import Documents from '../components/Documents.vue'
 import Database from '../components/Database.vue'
+import GamePlan from '../components/GamePlan.vue'
 import Profile from '../components/Profile.vue'
 import EditProfile from '../components/EditProfile.vue'
 import NewPage from '../components/NewPage.vue'
@@ -26,11 +27,12 @@ const routes = [
   { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, props: true},
   { path: '/docs', name: 'Documents', component: Documents },
   { path: '/database', name: 'Database', component: Database, meta: { requiresAuth: true } },
-  { path: '/profile/:userName', name: 'Profile', component: Profile, props: true, meta: { requiresAuth: true } },
+  { path: '/gameplan', name: 'GamePlan', component: GamePlan, meta: { requiresAuth: true } },
+  { path: '/viewprofile/:userName', name: 'Profile', component: Profile, props: true, meta: { requiresAuth: true } },
   { path: '/editprofile/:userName', name: 'EditProfile', component: EditProfile, props: true, meta: { requiresAuth: true } },
-  { path: '/new', name: 'NewPage', component: NewPage, meta: { requiresAuth: true } },
-  { path: '/edit/:postId', name: 'EditPage', component: EditPage, props: true, meta: { requiresAuth: true } },
-  { path: '/view/:postId', name: 'ViewPage', component: ViewPage, props: true, meta: { requiresAuth: false } }
+  { path: '/newpost', name: 'NewPage', component: NewPage, meta: { requiresAuth: true } },
+  { path: '/editpost/:postId', name: 'EditPage', component: EditPage, props: true, meta: { requiresAuth: true } },
+  { path: '/viewpost/:postId', name: 'ViewPage', component: ViewPage, props: true, meta: { requiresAuth: false } }
 ]
 
 const router = createRouter({
@@ -51,23 +53,26 @@ router.beforeEach(async (to, from, next) => {
 
   // Check if the route requires authentication
   if (to.meta.requiresAuth) {
-    if (accessToken && isTokenValid(accessToken)) {
+    if (accessToken && isTokenValid()) {
       next();
     } else if (refreshToken) {
       try {
         const newAccessToken = await refreshAccessToken(refreshToken);
         proceedAfterRefresh(newAccessToken);
       } catch (error) {
-        console.log("failed to refresh token", error)
+        console.log("Failed to refresh token:", error);
+        // Clear tokens since they're invalid or expired
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         next({ name: 'SignIn', query: { redirect: to.fullPath } });
       }
     } else {
       // No valid accessToken and no refreshToken, redirect to SignIn
       next({ name: 'SignIn', query: { redirect: to.fullPath } });
     }
-  } else if ((to.name === 'SignIn' || to.name === 'SignUp') && accessToken && isTokenValid(accessToken)) {
+  } else if ((to.name === 'SignIn' || to.name === 'SignUp') && accessToken && isTokenValid()) {
     // Redirect authenticated users away from SignIn and SignUp pages
-    next({ name: 'ProfileCard' });
+    next({ name: 'Database' }); // Changed from ProfileCard to Database
   } else {
     // Proceed to the route if no restrictions apply
     next();

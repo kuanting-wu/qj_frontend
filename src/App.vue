@@ -1,8 +1,26 @@
 <template>
-  <div class="flex overflow-hidden flex-col bg-white">
+  <div class="flex overflow-hidden flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
     <header
-      class="flex overflow-hidden flex-wrap gap-4 items-center px-6 py-2.5 w-full bg-white border-b border-zinc-300 min-h-[60px] max-md:px-5 max-md:max-w-full"
+      class="flex overflow-hidden flex-wrap gap-4 items-center px-6 py-2.5 w-full bg-white dark:bg-gray-900 border-b border-zinc-300 dark:border-zinc-700 min-h-[60px] max-md:px-5 max-md:max-w-full transition-colors duration-200"
     >
+      <!-- Sidebar toggle button for database page -->
+      <button
+        v-if="$route.path === '/database'" 
+        @click="toggleSidebar"
+        class="p-1.5 mr-2 rounded-md hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors duration-200 focus:outline-none"
+        aria-label="Toggle Sidebar"
+      >
+        <svg 
+          class="w-5 h-5" 
+          xmlns="http://www.w3.org/2000/svg" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      
       <router-link
         to="/"
         aria-label="Go to welcome page"
@@ -17,71 +35,204 @@
       </router-link>
 
       <nav
-        class="flex justify-end flex-wrap flex-1 shrink gap-2 items-center self-stretch my-auto leading-none whitespace-nowrap basis-0 font-[number:var(--sds-typography-body-font-weight-regular)] min-w-[240px] text-[length:var(--sds-typography-body-size-medium)] max-md:max-w-full"
+        class="flex justify-end flex-wrap flex-1 shrink gap-2 items-center self-stretch my-auto leading-none whitespace-nowrap basis-0 font-medium min-w-[240px] text-gray-800 dark:text-gray-200 max-md:max-w-full transition-colors duration-200"
       >
         <router-link
           to="/docs"
-          class="gap-2 self-stretch p-2 my-auto rounded-lg text-[color:var(--sds-color-text-brand-on-brand-secondary)]"
+          class="gap-2 self-stretch p-2 my-auto rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
         >
           Documents
         </router-link>
         <router-link
+          to="/gameplan"
+          class="gap-2 self-stretch p-2 my-auto rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+        >
+          Game Plan
+        </router-link>
+        <router-link
           to="/database"
-          class="gap-2 self-stretch p-2 my-auto rounded-lg text-[color:var(--sds-color-text-brand-on-brand-secondary)]"
+          class="gap-2 self-stretch p-2 my-auto rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
         >
           Database
         </router-link>
-        <router-link to="/new" aria-label="Create a new page">
-          <img
-            loading="lazy"
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/a1a346bb6435f7307fd48c41414b143ec3e125a1e61bb152903251e3aecff500?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-            class="object-contain shrink-0 self-stretch my-auto w-10 aspect-square"
-            alt=""
-          />
+        <router-link to="/newpost" aria-label="Create a new page" class="flex items-center justify-center p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-800 dark:text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
         </router-link>
       </nav>
 
       <!-- Profile Button -->
       <div class="relative">
-        <img
+        <!-- Avatar Button -->
+        <div 
           @click="toggleDropdown"
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/64c9bda73ca89162bc806ea1e084a3cd2dccf15193fe0e3c0e8008a485352e26?placeholderIfAbsent=true&apiKey=ee54480c62b34c3d9ff7ccdcccbf22d1"
-          class="object-contain shrink-0 self-stretch my-auto w-10 rounded-full aspect-square cursor-pointer"
-          alt="User profile"
-        />
+          class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 cursor-pointer overflow-hidden"
+        >
+          <img
+            v-if="userAvatar"
+            :src="userAvatar"
+            class="object-cover w-full h-full"
+            alt="User profile"
+          />
+          <span v-else class="text-lg font-medium text-gray-700 dark:text-gray-300">
+            {{ userInitial }}
+          </span>
+        </div>
       </div>
     </header>
 
     <!-- Dropdown Menu Outside Header -->
     <div
       v-if="showDropdown"
-      class="absolute right-0 top-[60px] w-48 py-2 bg-white rounded-lg shadow-lg border border-zinc-300 z-50"
+      class="absolute right-0 top-[60px] w-56 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-zinc-300 dark:border-zinc-700 z-50 transition-colors duration-200"
     >
-      <router-link
-        :to="profileLink"
-        class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        >Profile</router-link
-      >
-      <router-link
-        to="/signin"
-        class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        >Sign in</router-link
-      >
-      <a
-        href="#"
-        @click.prevent="signout"
-        class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-        >Sign out</a
-      >
+      <!-- User profile section when logged in -->
+      <template v-if="isLoggedIn">
+        <router-link
+          v-if="username"
+          :to="profileLink"
+          class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="flex items-center">
+            <span>Profile</span>
+          </div>
+        </router-link>
+        <div 
+          v-else
+          class="block px-4 py-2 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+        >
+          <div class="flex items-center">
+            <span>Profile (Login required)</span>
+          </div>
+        </div>
+        
+        <hr class="my-1 border-gray-200 dark:border-gray-700" />
+        
+        <!-- Language dropdown -->
+        <div class="relative">
+          <button 
+            @click="toggleLanguageDropdown"
+            class="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-200"
+          >
+            <span>Language: {{ getCurrentLanguageName() }}</span>
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline-block text-gray-700 dark:text-gray-200" :class="{'transform rotate-180': showLanguageMenu}">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
+          
+          <!-- Expandable language list -->
+          <div v-if="showLanguageMenu" class="pl-4 bg-gray-50 dark:bg-gray-700 transition-colors duration-200">
+            <button
+              v-for="lang in languages"
+              :key="lang.code"
+              @click="changeLanguage(lang.code)"
+              class="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center transition-colors duration-200"
+            >
+              <span>{{ lang.name }}</span>
+              <span v-if="currentLanguage === lang.code" class="ml-auto">✓</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Dark Mode Toggle -->
+        <hr class="my-1 border-gray-200 dark:border-gray-700" />
+        <button 
+          @click="toggleDarkMode"
+          class="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
+        >
+          <span class="mr-2">
+            <svg v-if="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </span>
+          <span>{{ darkMode ? 'Light mode' : 'Dark mode' }}</span>
+        </button>
+        
+        <hr class="my-1 border-gray-200 dark:border-gray-700" />
+        
+        <a
+          href="#"
+          @click.prevent="signout"
+          class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="flex items-center">
+            <span>Sign out</span>
+          </div>
+        </a>
+      </template>
+      
+      <!-- Not logged in -->
+      <template v-else>
+        <router-link
+          to="/signin"
+          class="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="flex items-center">
+            <span>Sign in</span>
+          </div>
+        </router-link>
+        
+        <hr class="my-1 border-gray-200 dark:border-gray-700" />
+        
+        <!-- Language dropdown -->
+        <div class="relative">
+          <button 
+            @click="toggleLanguageDropdown"
+            class="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-between transition-colors duration-200"
+          >
+            <span>Language: {{ getCurrentLanguageName() }}</span>
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline-block text-gray-700 dark:text-gray-200" :class="{'transform rotate-180': showLanguageMenu}">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </span>
+          </button>
+          
+          <!-- Expandable language list -->
+          <div v-if="showLanguageMenu" class="pl-4 bg-gray-50 dark:bg-gray-700 transition-colors duration-200">
+            <button
+              v-for="lang in languages"
+              :key="lang.code"
+              @click="changeLanguage(lang.code)"
+              class="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center transition-colors duration-200"
+            >
+              <span>{{ lang.name }}</span>
+              <span v-if="currentLanguage === lang.code" class="ml-auto">✓</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dark Mode Toggle Item -->
+        <hr class="my-1 border-gray-200 dark:border-gray-700" />
+        <button 
+          @click="toggleDarkMode"
+          class="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center transition-colors duration-200"
+        >
+          <span class="mr-2">
+            <svg v-if="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </span>
+          <span>{{ darkMode ? 'Light mode' : 'Dark mode' }}</span>
+        </button>
+      </template>
     </div>
 
-    <div class="relative z-0 flex-grow">
+    <div class="relative z-0 flex-grow flex flex-col">
       <router-view />
     </div>
 
     <footer
-      class="flex overflow-hidden flex-wrap gap-4 items-start px-8 pt-8 pb-40 w-full bg-white border-t border-zinc-300 max-md:px-5 max-md:pb-24 max-md:max-w-full"
+      class="flex overflow-hidden flex-wrap gap-4 items-start px-8 py-6 w-full bg-white dark:bg-gray-900 border-t border-zinc-300 dark:border-zinc-700 max-md:px-5 max-md:py-4 max-md:max-w-full transition-colors duration-200"
     >
       <div class="flex flex-col items-start min-w-[240px] w-[262px]">
         <router-link to="/" class="flex justify-center items-center w-[50px]">
@@ -98,56 +249,242 @@
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed, watch, provide } from "vue";
 import { useRouter } from "vue-router";
-import { getUserFromToken } from "./utils/auth";
+import { getUserFromToken, isUserLoggedIn } from "./utils/auth";
 
 export default {
   setup() {
     const router = useRouter();
     const showDropdown = ref(false);
-    const user_name = ref("example");
-    const profileLink = computed(() => `/profile/${user_name.value}`);
-
+    const username = ref("");
+    const isLoggedIn = ref(false);
+    const currentLanguage = ref("en");
+    const userAvatar = ref(null);
+    const darkMode = ref(false);
+    const sidebarExpanded = ref(true);
+    
+    // Toggle sidebar function that will be accessible by Database component
+    const toggleSidebar = () => {
+      sidebarExpanded.value = !sidebarExpanded.value;
+      // Provide this state to child components
+      window.dispatchEvent(new CustomEvent('toggle-sidebar', { 
+        detail: { expanded: sidebarExpanded.value }
+      }));
+    };
+    
+    // Provide sidebar state to child components
+    provide('sidebarExpanded', sidebarExpanded);
+    
+    // Available languages for the UI
+    const languages = [
+      { code: "en", name: "English" },
+      { code: "ja", name: "Japanese" },
+      { code: "zh", name: "Chinese" }
+    ];
+    
+    // State for language dropdown
+    const showLanguageMenu = ref(false);
+    
+    // Computed to get user's initial for avatar placeholder
+    const userInitial = computed(() => {
+      if (username.value && username.value.length > 0) {
+        return username.value.charAt(0).toUpperCase();
+      }
+      return "U"; // Default initial
+    });
+    
+    // Toggle dark mode for the entire application
+    const toggleDarkMode = () => {
+      darkMode.value = !darkMode.value;
+      localStorage.setItem("darkMode", darkMode.value ? "dark" : "light");
+      
+      // Apply dark mode to HTML element to affect the entire app
+      if (darkMode.value) {
+        document.documentElement.classList.add('dark');
+        // Set explicit background color for overscroll in dark mode
+        document.documentElement.style.backgroundColor = '#111827'; // Tailwind gray-900
+      } else {
+        document.documentElement.classList.remove('dark');
+        // Set explicit background color for overscroll in light mode
+        document.documentElement.style.backgroundColor = '#ffffff'; // White
+      }
+      
+      // Close dropdown after toggling
+      showDropdown.value = false;
+    };
+    
+    // Fetch user avatar
+    const fetchUserAvatar = () => {
+      try {
+        // Get the JWT token from local storage
+        const token = localStorage.getItem('accessToken');
+        
+        if (token) {
+          // Decode the JWT token (it's base64-encoded)
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const decodedToken = JSON.parse(atob(base64));
+          
+          // Check if avatar_url exists in the token
+          if (decodedToken.avatar_url) {
+            userAvatar.value = decodedToken.avatar_url;
+            return;
+          }
+        }
+        
+        // Fallback if no token or no avatar in token
+        if (username.value) {
+          userAvatar.value = `https://ui-avatars.com/api/?name=${encodeURIComponent(username.value)}&background=random`;
+        } else {
+          userAvatar.value = null;
+        }
+      } catch (error) {
+        console.error("Failed to get avatar from token:", error);
+        
+        // Fallback to generated avatar
+        if (username.value) {
+          userAvatar.value = `https://ui-avatars.com/api/?name=${encodeURIComponent(username.value)}&background=random`;
+        } else {
+          userAvatar.value = null;
+        }
+      }
+    };
+    
+    // Link to user profile
+    const profileLink = computed(() => {
+      return username.value ? `/viewprofile/${username.value}` : '/database';
+    });
+    
+    // Check login status
+    const checkLoginStatus = () => {
+      isLoggedIn.value = isUserLoggedIn();
+      username.value = getUserFromToken() || "";
+      if (isLoggedIn.value && username.value) {
+        fetchUserAvatar();
+      } else {
+        userAvatar.value = null;
+      }
+    };
+    
+    // Toggle dropdown menu
     const toggleDropdown = () => {
       showDropdown.value = !showDropdown.value;
     };
 
+    // Sign out
     const signout = () => {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      username.value = "";
+      isLoggedIn.value = false;
       router.push("/");
-      alert("Signed out successfully");
+      showDropdown.value = false;
+    };
+    
+    // Toggle language dropdown
+    const toggleLanguageDropdown = () => {
+      showLanguageMenu.value = !showLanguageMenu.value;
+    };
+    
+    // Get current language name
+    const getCurrentLanguageName = () => {
+      const lang = languages.find(l => l.code === currentLanguage.value);
+      return lang ? lang.name : "English";
+    };
+    
+    // Change UI language
+    const changeLanguage = (langCode) => {
+      currentLanguage.value = langCode;
+      localStorage.setItem("appLanguage", langCode);
+      showLanguageMenu.value = false;
+      
+      // Add translation logic here when implementing i18n
+      // This is a placeholder for future implementation
     };
 
+    // Close dropdowns when clicking outside
     const handleClickOutside = (event) => {
-      const dropdown = document.querySelector(".absolute"); // Adjusted selector for dropdown
+      const dropdown = document.querySelector(".absolute"); // Dropdown element
       const profileButton = document.querySelector(".relative img"); // Profile button
-
+      
+      // Close main dropdown when clicking outside
       if (
         showDropdown.value &&
-        !dropdown.contains(event.target) &&
-        !profileButton.contains(event.target)
+        dropdown && !dropdown.contains(event.target) &&
+        profileButton && !profileButton.contains(event.target)
       ) {
         showDropdown.value = false;
+        // Also close language menu when main dropdown is closed
+        showLanguageMenu.value = false;
       }
     };
 
     onMounted(() => {
-      user_name.value = getUserFromToken();
+      // Check login status on mount
+      checkLoginStatus();
+      
+      // Fetch user avatar if logged in
+      if (isLoggedIn.value && username.value) {
+        fetchUserAvatar();
+      }
+      
+      // Load saved language preference
+      const savedLanguage = localStorage.getItem("appLanguage");
+      if (savedLanguage) {
+        currentLanguage.value = savedLanguage;
+      }
+      
+      // Load saved dark mode preference (synchronize with what's already applied in main.js)
+      const savedDarkMode = localStorage.getItem("darkMode");
+      if (savedDarkMode) {
+        darkMode.value = savedDarkMode === "dark";
+      } else {
+        // Check if user prefers dark mode
+        const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (prefersDarkMode) {
+          darkMode.value = true;
+        } else {
+          darkMode.value = false;
+        }
+      }
+      
+      // Add click outside listener
       document.addEventListener("click", handleClickOutside);
+      
+      // Set up event listener for auth changes
+      window.addEventListener("storage", (e) => {
+        if (e.key === "accessToken") {
+          checkLoginStatus();
+          fetchUserAvatar();
+        }
+      });
     });
 
     onBeforeUnmount(() => {
       document.removeEventListener("click", handleClickOutside);
+      window.removeEventListener("storage", checkLoginStatus);
     });
 
     return {
       showDropdown,
-      user_name,
+      username,
+      isLoggedIn,
       profileLink,
       toggleDropdown,
       signout,
+      languages,
+      currentLanguage,
+      changeLanguage,
+      showLanguageMenu,
+      toggleLanguageDropdown,
+      getCurrentLanguageName,
+      darkMode,
+      toggleDarkMode,
+      userAvatar,
+      userInitial,
+      sidebarExpanded,
+      toggleSidebar
     };
   },
 };

@@ -94,8 +94,8 @@ export default {
           const { accessToken, refreshToken, message, email_verified } =
             response.data;
 
-          // Check if email is verified (email_verified will be 1 if verified)
-          if (email_verified !== 1) {
+          // Check if email is verified
+          if (!email_verified) {
             alert("Please verify your email before signing in.");
             return;
           }

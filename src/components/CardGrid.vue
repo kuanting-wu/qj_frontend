@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col px-16 py-12 bg-white max-md:px-5">
-    <h1 class="w-16 tracking-tight leading-tight whitespace-nowrap font-[number:var(--sds-typography-heading-font-weight)] text-[color:var(--sds-color-text-default-default)] text-[length:var(--sds-typography-heading-size-base)]">
+  <div class="flex flex-col px-16 py-12 bg-white dark:bg-gray-900 max-md:px-5 transition-colors duration-200">
+    <h1 class="w-16 tracking-tight leading-tight whitespace-nowrap text-gray-800 dark:text-gray-100 text-2xl font-semibold transition-colors duration-200">
       Posts
     </h1>
     <main class="flex flex-wrap gap-16 justify-between items-center mt-8 w-full max-md:max-w-full">
