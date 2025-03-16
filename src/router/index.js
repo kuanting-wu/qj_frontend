@@ -14,6 +14,8 @@ import EditProfile from '../components/EditProfile.vue'
 import NewPage from '../components/NewPage.vue'
 import EditPage from '../components/EditPage.vue'
 import ViewPage from '../components/ViewPage.vue'
+import PrivacyPolicy from '../components/PrivacyPolicy.vue'
+import YouTubeCallback from '../components/YouTubeCallback.vue'
 import { isTokenValid } from '../utils/auth'
 import { refreshAccessToken } from '../utils/auth'
 
@@ -22,6 +24,7 @@ const routes = [
   { path: '/signin', name: 'SignIn', component: SignIn },
   { path: '/signup', name: 'SignUp', component: SignUp },
   { path: '/terms', name: 'Terms', component: Terms },
+  { path: '/privacy', name: 'PrivacyPolicy', component: PrivacyPolicy },
   { path: '/verify-email', name: 'VerifyEmail', component: VerifyEmail, props: true},
   { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword, props: true},
   { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, props: true},
@@ -32,7 +35,8 @@ const routes = [
   { path: '/editprofile/:userName', name: 'EditProfile', component: EditProfile, props: true, meta: { requiresAuth: true } },
   { path: '/newpost', name: 'NewPage', component: NewPage, meta: { requiresAuth: true } },
   { path: '/editpost/:postId', name: 'EditPage', component: EditPage, props: true, meta: { requiresAuth: true } },
-  { path: '/viewpost/:postId', name: 'ViewPage', component: ViewPage, props: true, meta: { requiresAuth: false } }
+  { path: '/viewpost/:postId', name: 'ViewPage', component: ViewPage, props: true, meta: { requiresAuth: false } },
+  { path: '/auth/youtube/callback', name: 'YouTubeCallback', component: YouTubeCallback, meta: { requiresAuth: true } }
 ]
 
 const router = createRouter({

@@ -1,7 +1,7 @@
 <template>
-  <div class="flex overflow-hidden flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
+  <div class="pt-16 flex overflow-hidden flex-col min-h-screen bg-white dark:bg-gray-900 transition-colors duration-200">
     <header
-      class="flex overflow-hidden flex-wrap gap-4 items-center px-6 py-2.5 w-full bg-white dark:bg-gray-900 border-b border-zinc-300 dark:border-zinc-700 min-h-[60px] max-md:px-5 max-md:max-w-full transition-colors duration-200"
+      class="fixed top-0 left-0 right-0 z-50 flex overflow-hidden flex-wrap gap-4 items-center px-6 py-2.5 w-full bg-white dark:bg-gray-900 border-b border-zinc-300 dark:border-zinc-700 min-h-[60px] max-md:px-5 max-md:max-w-full transition-colors duration-200"
     >
       <!-- Sidebar toggle button for database page -->
       <button

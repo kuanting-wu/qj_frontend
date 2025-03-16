@@ -1,94 +1,172 @@
 <template>
   <main
-    class="flex flex-col justify-center items-center px-6 py-40 bg-neutral-100 max-md:px-5 max-md:py-24"
+    class="flex flex-col justify-center items-center px-6 py-40 bg-neutral-100 dark:bg-gray-900 transition-colors duration-200 min-h-screen"
   >
     <h1
-      class="max-w-full tracking-tighter leading-tight text-center font-[number:var(--sds-typography-title-hero-font-weight)] text-[color:var(--sds-color-text-brand-on-brand-tertiary)] text-6xl w-[259px] max-md:text-4xl"
+      class="max-w-full tracking-tighter leading-tight text-center font-bold text-gray-800 dark:text-gray-100 text-6xl w-[259px] max-md:text-4xl transition-colors duration-200"
     >
       Forgot Password
     </h1>
+    
+    <!-- Notification Message -->
+    <div 
+      v-if="notification.show" 
+      class="mt-4 w-80 p-4 rounded-lg text-center transition-all duration-200"
+      :class="[
+        notification.type === 'error' 
+          ? 'bg-red-100 dark:bg-red-900/40 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200' 
+          : 'bg-green-100 dark:bg-green-900/40 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-200'
+      ]"
+    >
+      <p class="text-sm">{{ notification.message }}</p>
+    </div>
+    
     <div
-      class="flex flex-col p-6 mt-8 w-80 max-w-full bg-white rounded-lg border border-solid border-zinc-300 min-w-[320px] max-md:px-5 text-center"
+      class="flex flex-col p-6 mt-8 w-80 max-w-full bg-white dark:bg-gray-800 rounded-lg border border-solid border-zinc-300 dark:border-zinc-700 min-w-[320px] text-sm transition-colors duration-200"
     >
       <p
-        class="mb-6 text-[length:var(--sds-typography-body-size-medium)] text-[color:var(--sds-color-text-default-default)]"
+        class="mb-6 text-gray-700 dark:text-gray-300 transition-colors duration-200"
       >
         Enter your email address to receive a password reset link.
       </p>
-      <input
-        v-model="email"
-        type="email"
-        placeholder="Email Address"
-        class="mb-4 p-3 w-full border border-solid border-zinc-300 rounded-lg text-[length:var(--sds-typography-body-size-medium)] text-[color:var(--sds-color-text-default-default)]"
-      />
+      
+      <div class="flex flex-col w-full whitespace-nowrap">
+        <label
+          for="email"
+          class="leading-snug text-gray-700 dark:text-gray-300 transition-colors duration-200 mb-2"
+        >
+          Email
+        </label>
+        <input
+          id="email"
+          v-model="email"
+          type="email"
+          placeholder="Enter your email"
+          required
+          class="overflow-hidden flex-1 shrink self-stretch px-4 py-3 w-full leading-none bg-white dark:bg-gray-700 rounded-lg border border-solid border-zinc-300 dark:border-zinc-600 min-w-[240px] text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-zinc-500 transition-colors duration-200"
+        />
+      </div>
+      
       <button
         @click="handleForgotPassword"
-        class="overflow-hidden gap-2 self-stretch p-3 w-full text-white leading-none whitespace-nowrap rounded-lg border border-solid bg-zinc-800 border-zinc-800 font-[number:var(--sds-typography-body-font-weight-regular)] min-h-[40px] text-[color:var(--sds-color-text-brand-on-brand)] text-[length:var(--sds-typography-body-size-medium)]"
+        :disabled="isSubmitting"
+        class="overflow-hidden gap-2 self-stretch p-3 mt-6 w-full text-white leading-none whitespace-nowrap rounded-lg border border-solid bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-600 dark:hover:bg-zinc-500 border-zinc-800 dark:border-zinc-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-70 disabled:cursor-not-allowed"
       >
-        Submit
+        <span v-if="isSubmitting">Sending...</span>
+        <span v-else>Submit</span>
       </button>
-    </div>
-
-    <!-- Error Popup -->
-    <div
-      v-if="showErrorPopup"
-      class="fixed top-8 left-1/2 transform -translate-x-1/2 p-4 bg-red-500 text-white rounded-lg shadow-lg max-w-full text-center z-50"
-    >
-      {{ errorMessage }}
+      
+      <button
+        type="button"
+        @click="goToSignIn"
+        class="mt-6 w-fit mx-auto leading-snug text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
+      >
+        Back to Sign In
+      </button>
     </div>
   </main>
 </template>
 
 <script>
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
 import { BACKEND_URL } from "../utils/config";
 
 export default {
-  data() {
-    return {
-      email: "",
-      showErrorPopup: false, // Controls the visibility of the error popup
-      errorMessage: "", // Stores the error message to display
+  setup() {
+    const router = useRouter();
+    const email = ref("");
+    const isSubmitting = ref(false);
+    const notification = ref({
+      show: false,
+      type: "error",
+      message: ""
+    });
+
+    // Function to show notification
+    const showNotification = (message, type = "error", duration = 5000) => {
+      notification.value = {
+        show: true,
+        type: type,
+        message: message
+      };
+      
+      setTimeout(() => {
+        notification.value.show = false;
+      }, duration);
     };
-  },
-  methods: {
-    validateEmail(email) {
-      // Regular expression for validating email format
+
+    // Email validation
+    const validateEmail = (email) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
-    },
-    async handleForgotPassword() {
-      // Check if the email format is valid
-      if (!this.validateEmail(this.email)) {
-        this.errorMessage = "Please enter a valid email address.";
-        this.showErrorPopup = true;
-        setTimeout(() => {
-          this.showErrorPopup = false;
-        }, 3000);
+    };
+
+    const handleForgotPassword = async () => {
+      if (isSubmitting.value) return;
+      
+      // Validate email format
+      if (!validateEmail(email.value)) {
+        showNotification("Please enter a valid email address.");
         return;
       }
 
-      // Proceed with the API call if the email format is valid
+      isSubmitting.value = true;
+      
       try {
         const response = await axios.post(`${BACKEND_URL}/forgot-password`, {
-          email: this.email,
+          email: email.value,
         });
+        
         if (response.status === 200) {
-          alert("Password reset email sent successfully!"); // Alternatively, use a success popup.
+          // Show success notification
+          showNotification(
+            "Password reset email sent. Please check your inbox.", 
+            "success", 
+            5000
+          );
+          
+          // Clear email field
+          email.value = "";
         }
       } catch (error) {
-        console.error(error.message); // Log error for debugging
+        console.error("Error:", error.message);
+        
         if (error.response && error.response.status === 404) {
-          this.errorMessage = "Email address not found. Please try again or sign up for an account.";
-          this.showErrorPopup = true;
-          setTimeout(() => {
-            this.showErrorPopup = false;
-          }, 3000);
+          showNotification("Email address not found. Please try again or sign up for an account.");
         } else {
-          console.error("Unexpected error:", error);
+          showNotification("An error occurred. Please try again later.");
         }
+      } finally {
+        isSubmitting.value = false;
       }
-    },
-  },
+    };
+
+    const goToSignIn = () => {
+      router.push("/signin");
+    };
+
+    return {
+      email,
+      isSubmitting,
+      notification,
+      handleForgotPassword,
+      goToSignIn
+    };
+  }
 };
 </script>
+
+<style scoped>
+/* Button hover effect */
+button:not(:disabled):hover {
+  transform: translateY(-1px);
+  transition: transform 0.2s ease;
+}
+
+/* Focus styles for accessibility */
+input:focus, button:focus {
+  outline: none;
+}
+</style>

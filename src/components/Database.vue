@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative transition-colors duration-200 pt-[60px]"
+    class="flex min-h-screen bg-gray-50 dark:bg-gray-900 relative transition-colors duration-200 pt-[0px]"
   >
     <!-- Mobile menu toggle -->
     <button
@@ -13,9 +13,8 @@
       </svg>
     </button>
     
-    <!-- Sidebar -->
     <div 
-      class="fixed top-[60px] left-0 z-10 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 h-[calc(100%-60px)] overflow-y-auto flex flex-col transition-all duration-300 ease-in-out"
+      class="absolute left-0 top-0 w-56 py-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-zinc-300 dark:border-zinc-700 z-50 transition-colors duration-200"
       :class="{
         'translate-x-0': isSidebarOpen || !isMobile, 
         '-translate-x-full': !isSidebarOpen && isMobile,
@@ -35,7 +34,7 @@
               v-model="formData.search"
               @keyup.enter="fetchPosts"
               class="py-2 px-4 pr-12 w-full rounded-md bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400 focus:bg-gray-50 dark:focus:bg-gray-600 transition-colors text-sm"
-              placeholder="Search titles, positions, techniques, etc."
+              placeholder="Titles, positions, techniques, etc."
               aria-label="Search"
             />
             <button 
@@ -427,7 +426,7 @@ export default {
       } else if (isPanelExpanded.value) {
         return '320px'; // 80px * 4 = 320px (tailwind w-80 = 20rem = 320px)
       } else {
-        return '60px';
+        return '0px';
       }
     });
 
