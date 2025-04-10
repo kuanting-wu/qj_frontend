@@ -143,7 +143,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
-import { BACKEND_URL } from "../utils/config";
+import { BACKEND_URL } from "@/utils/config";
 
 export default {
   setup() {

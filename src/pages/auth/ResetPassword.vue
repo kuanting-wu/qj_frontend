@@ -72,7 +72,7 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useRoute, useRouter } from "vue-router";
-import { BACKEND_URL } from "../utils/config";
+import { BACKEND_URL } from "@/utils/config";
 
 export default {
   setup() {

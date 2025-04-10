@@ -1,5 +1,5 @@
 <template>
-  <article class="flex flex-col p-8 bg-white dark:bg-gray-800 max-w-4xl mx-auto transition-colors duration-200">
+  <article class="flex flex-col p-8 bg-white dark:bg-gray-900 max-w-4xl mx-auto transition-colors duration-200">
     <!-- Top Section: Avatar and Basic Info -->
     <div class="flex flex-col md:flex-row gap-6 mb-8">
       <!-- Avatar -->
@@ -108,8 +108,8 @@
 <script>
 import { ref, onMounted, computed, watch } from "vue";
 import axios from "axios";
-import { getUserFromToken } from "../utils/auth";
-import { BACKEND_URL } from "../utils/config";
+import { getUserFromToken } from "@/utils/auth";
+import { BACKEND_URL } from "@/utils/config";
 
 export default {
   props: ["userName"], // Keep prop name for compatibility with router

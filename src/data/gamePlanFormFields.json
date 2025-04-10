@@ -1,0 +1,45 @@
+[
+    {
+      "name": "search",
+      "label": "Search",
+      "type": "text",
+      "placeholder": "Titles, positions, techniques, etc."
+    },
+    {
+      "name": "createdBy",
+      "label": "Owner",
+      "type": "text",
+      "placeholder": "Enter owner's name"
+    },
+    {
+      "name": "publicStatus",
+      "label": "Public Status",
+      "type": "select",
+      "options": [
+        { "value": "", "label": "Any" },
+        { "value": "public", "label": "Public" },
+        { "value": "subscribers", "label": "Subscribers Only" },
+        { "value": "private", "label": "Private" }
+      ]
+    },
+    {
+      "name": "language",
+      "label": "Language",
+      "type": "select",
+      "options": [
+        { "value": "", "label": "Any" },
+        { "value": "English", "label": "English" },
+        { "value": "Japanese", "label": "Japanese" },
+        { "value": "Traditional Chinese", "label": "Traditional Chinese" }
+      ]
+    },
+    {
+      "name": "sortOption",
+      "label": "Sort By",
+      "type": "select",
+      "options": [
+        { "value": "newToOld", "label": "New to Old" },
+        { "value": "oldToNew", "label": "Old to New" }
+      ]
+    }
+  ]

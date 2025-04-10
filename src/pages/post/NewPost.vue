@@ -4,29 +4,32 @@
       <h1 class="text-3xl font-bold mb-6 text-gray-800 dark:text-gray-100 transition-colors duration-200">
         Add New Video
       </h1>
-      
+
       <!-- Destination Selection -->
-      <div class="mb-8">
-        <h2 class="text-xl font-medium mb-4 text-gray-800 dark:text-gray-200 transition-colors duration-200">Select Destination</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="justify-center mb-8">
+        <h2 class="text-xl font-medium mb-4 text-gray-800 dark:text-gray-200 transition-colors duration-200">Select
+          Destination</h2>
+        <div class="flex justify-center">
           <!-- URL Card -->
-          <div 
-            @click="selectDestination('url')"
+          <div @click="selectDestination('url')"
             class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 cursor-pointer transition-all duration-200 text-center hover:shadow-md"
-            :class="{'ring-2 ring-blue-500 dark:ring-zinc-400': selectedDestination === 'url'}"
-          >
-            <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center transition-colors duration-200">
-              <svg class="w-8 h-8 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            :class="{ 'ring-2 ring-blue-500 dark:ring-zinc-400': selectedDestination === 'url' }">
+            <div
+              class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center transition-colors duration-200">
+              <svg class="w-8 h-8 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2 transition-colors duration-200">Video URL</h3>
+            <h3 class="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2 transition-colors duration-200">Video
+              URL</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
               Use an existing video from YouTube, Vimeo, or Bilibili
             </p>
           </div>
-          
-          <!-- YouTube Card -->
+
+          <!-- YouTube Card 
           <div 
             @click="selectDestination('youtube')"
             class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 cursor-pointer transition-all duration-200 text-center hover:shadow-md"
@@ -42,8 +45,8 @@
               Upload video to your YouTube channel
             </p>
           </div>
-          
-          <!-- Vimeo Card -->
+          -->
+          <!-- Vimeo Card 
           <div 
             @click="selectDestination('vimeo')"
             class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 cursor-pointer transition-all duration-200 text-center hover:shadow-md"
@@ -59,71 +62,58 @@
               Upload video to your Vimeo account
             </p>
           </div>
+          -->
         </div>
       </div>
-      
+
       <!-- Content based on selected destination -->
       <div v-if="selectedDestination" class="mb-8">
-        <!-- URL Input -->
-        <div v-if="selectedDestination === 'url'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
-          <h2 class="text-xl font-medium mb-4 text-gray-800 dark:text-gray-200 transition-colors duration-200">Enter Video URL</h2>
-          
+
+        <div v-if="selectedDestination === 'url'"
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
+          <h2 class="text-xl font-medium mb-4 text-gray-800 dark:text-gray-200 transition-colors duration-200">Enter
+            Video URL</h2>
+
           <div class="mb-6">
-            <label for="videoUrl" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
+            <label for="videoUrl"
+              class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
               Video URL
             </label>
-            <input
-              id="videoUrl"
-              type="text"
-              v-model="formData.video_url"
-              @input="extractVideoId"
+            <input id="videoUrl" type="text" v-model="formData.video_url" @input="extractVideoId"
               placeholder="Paste YouTube, Vimeo or Bilibili URL here"
-              class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-zinc-500 transition-colors duration-200"
-            />
+              class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-zinc-500 transition-colors duration-200" />
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
               Supported platforms: YouTube, Vimeo, Bilibili
             </p>
           </div>
-          
-          <div v-if="videoPreview.id && videoPreview.platform" class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-200">
-            <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">Video Preview</h3>
+
+          <div v-if="videoPreview.id && videoPreview.platform"
+            class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-200">
+            <h3 class="font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">Video Preview
+            </h3>
             <div class="aspect-video w-full max-w-md mx-auto bg-black rounded-lg overflow-hidden">
-              <iframe 
-                v-if="videoPreview.platform === 'YouTube'"
-                :src="`https://www.youtube.com/embed/${videoPreview.id}`"
-                class="w-full h-full"
-                frameborder="0"
+              <iframe v-if="videoPreview.platform === 'YouTube'"
+                :src="`https://www.youtube.com/embed/${videoPreview.id}`" class="w-full h-full" frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
-              <iframe 
-                v-else-if="videoPreview.platform === 'Vimeo'"
-                :src="`https://player.vimeo.com/video/${videoPreview.id}`"
-                class="w-full h-full"
-                frameborder="0"
-                allow="autoplay; fullscreen"
-                allowfullscreen
-              ></iframe>
-              <iframe 
-                v-else-if="videoPreview.platform === 'Bilibili'"
-                :src="`https://player.bilibili.com/player.html?bvid=${videoPreview.id}`"
-                class="w-full h-full"
-                frameborder="0"
-                allow="autoplay; fullscreen"
-                allowfullscreen
-              ></iframe>
+                allowfullscreen></iframe>
+              <iframe v-else-if="videoPreview.platform === 'Vimeo'"
+                :src="`https://player.vimeo.com/video/${videoPreview.id}`" class="w-full h-full" frameborder="0"
+                allow="autoplay; fullscreen" allowfullscreen></iframe>
+              <iframe v-else-if="videoPreview.platform === 'Bilibili'"
+                :src="`https://player.bilibili.com/player.html?bvid=${videoPreview.id}`" class="w-full h-full"
+                frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
             </div>
           </div>
         </div>
-        
-        <!-- YouTube destination -->
+
+        <!-- Youtube destination
         <div v-else-if="selectedDestination === 'youtube'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
           <h2 class="text-xl font-medium mb-4 text-gray-800 dark:text-gray-200 transition-colors duration-200">Upload to YouTube</h2>
           
-          <!-- YouTube video metadata form -->
+
           <div v-if="isYouTubeAuthenticated" class="mb-6">
             <div class="space-y-4">
-              <!-- Title -->
+
               <div>
                 <label for="youtube-title" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
                   Title <span class="text-red-500">*</span>
@@ -133,12 +123,12 @@
                   type="text"
                   v-model="youtubeMetadata.title"
                   placeholder="Enter video title"
-                  :disabled="uploadUrlReceived"
+                  :disabled="youtubeUploadInitialized"
                   class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-zinc-500 transition-colors duration-200"
                 />
               </div>
               
-              <!-- Description -->
+
               <div>
                 <label for="youtube-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
                   Description
@@ -147,36 +137,36 @@
                   id="youtube-description"
                   v-model="youtubeMetadata.description"
                   placeholder="Enter video description"
-                  :disabled="uploadUrlReceived"
+                  :disabled="youtubeUploadInitialized"
                   rows="4"
                   class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-zinc-500 transition-colors duration-200"
                 ></textarea>
               </div>
               
-              <!-- Get Upload URL Button -->
-              <div v-if="!uploadUrlReceived" class="mt-4">
+
+              <div v-if="!youtubeUploadInitialized" class="mt-4">
                 <button 
-                  @click="getYouTubeUploadUrl"
+                  @click="initializeYouTubeUpload"
                   :disabled="!youtubeMetadata.title"
                   class="px-5 py-2.5 w-full text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
-                  <svg v-if="isRequestingUrl" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg v-if="isInitializing" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  {{ isRequestingUrl ? 'Preparing Upload...' : 'Continue to File Selection' }}
+                  {{ isInitializing ? 'Preparing Upload...' : 'Continue to File Selection' }}
                 </button>
               </div>
             </div>
           </div>
           
-          <!-- Authentication Section if not authenticated -->
+
           <div v-if="!isYouTubeAuthenticated" class="text-center py-6">
             <p class="mb-6 text-gray-700 dark:text-gray-300 transition-colors duration-200">
               Connect your YouTube account to upload videos
             </p>
             
-            <!-- YouTube Connect Button -->
+
             <button 
               @click="authenticateYouTube"
               class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition duration-150 flex items-center justify-center mx-auto mb-4"
@@ -192,44 +182,12 @@
             </p>
           </div>
           
-          <!-- File Upload UI after getting YouTube upload URL -->
-          <div v-else-if="isYouTubeAuthenticated && selectedDestination === 'youtube' && uploadUrlReceived" class="py-4">
-            <h3 class="text-lg font-medium mb-4 text-gray-700 dark:text-gray-300 transition-colors duration-200">Upload to YouTube</h3>
-            
-            <!-- YouTube File Upload Area -->
-            <div class="mt-4">
-              <div class="flex items-center justify-center w-full">
-                <label class="flex flex-col w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
-                  <div class="flex flex-col items-center justify-center pt-7">
-                    <svg class="w-8 h-8 text-gray-400 dark:text-gray-500 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                    <p class="pt-1 text-sm text-gray-500 dark:text-gray-400">Click to upload or drag and drop</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">MP4, MOV, or WEBM (Max 2GB)</p>
-                  </div>
-                  <input type="file" class="hidden" accept="video/*" @change="handleYouTubeFileUpload" />
-                </label>
-              </div>
-              
-              <!-- YouTube Upload Progress -->
-              <div v-if="localFile && youtubeUploadStarted" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-200">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">Uploading to YouTube: {{ localFile.name }}</span>
-                  <span class="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-200">{{ youtubeUploadProgress }}%</span>
-                </div>
-                <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5 transition-colors duration-200">
-                  <div class="bg-red-500 h-2.5 rounded-full" :style="`width: ${youtubeUploadProgress}%`"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Old video source selection, hide for YouTube flow with URL received -->
+
           <div v-else class="py-4">
             <h3 class="text-lg font-medium mb-4 text-gray-700 dark:text-gray-300 transition-colors duration-200">Choose Video Source</h3>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              <!-- Local File Source -->
+
               <div 
                 @click="selectedSource = 'local'"
                 class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer transition-all duration-200"
@@ -249,7 +207,7 @@
                 </div>
               </div>
               
-              <!-- Google Drive Source -->
+
               <div 
                 @click="selectGoogleDriveSource"
                 class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer transition-all duration-200"
@@ -275,7 +233,7 @@
               </div>
             </div>
             
-            <!-- Local File Upload Area -->
+
             <div v-if="selectedSource === 'local'" class="mt-6">
               <div class="flex items-center justify-center w-full">
                 <label class="flex flex-col w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
@@ -290,7 +248,7 @@
                 </label>
               </div>
               
-              <!-- Upload Progress -->
+
               <div v-if="localFile" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-200">
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">{{ localFile.name }}</span>
@@ -302,7 +260,7 @@
               </div>
             </div>
             
-            <!-- Google Drive Picker Area -->
+
             <div v-if="selectedSource === 'drive' && !isGoogleDriveAuthenticated" class="mt-6 text-center">
               <button 
                 @click="authenticateGoogleDrive"
@@ -331,12 +289,13 @@
             </div>
           </div>
         </div>
-        
-        <!-- Vimeo destination -->
+      -->
+
+        <!-- Vimeo destination 
         <div v-else-if="selectedDestination === 'vimeo'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 transition-colors duration-200">
           <h2 class="text-xl font-medium mb-4 text-gray-800 dark:text-gray-200 transition-colors duration-200">Upload to Vimeo</h2>
           
-          <!-- Authentication Section if not authenticated -->
+
           <div v-if="!isVimeoAuthenticated" class="text-center py-6">
             <p class="mb-6 text-gray-700 dark:text-gray-300 transition-colors duration-200">
               Connect your Vimeo account to upload videos
@@ -357,12 +316,12 @@
             </p>
           </div>
           
-          <!-- Video Source Selection after authentication -->
+
           <div v-else class="py-4">
             <h3 class="text-lg font-medium mb-4 text-gray-700 dark:text-gray-300 transition-colors duration-200">Choose Video Source</h3>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              <!-- Local File Source -->
+
               <div 
                 @click="selectedSource = 'local'"
                 class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer transition-all duration-200"
@@ -382,7 +341,7 @@
                 </div>
               </div>
               
-              <!-- Google Drive Source -->
+
               <div 
                 @click="selectGoogleDriveSource"
                 class="border border-gray-200 dark:border-gray-700 rounded-lg p-4 cursor-pointer transition-all duration-200"
@@ -408,7 +367,7 @@
               </div>
             </div>
             
-            <!-- Local File Upload Area -->
+
             <div v-if="selectedSource === 'local'" class="mt-6">
               <div class="flex items-center justify-center w-full">
                 <label class="flex flex-col w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
@@ -423,7 +382,7 @@
                 </label>
               </div>
               
-              <!-- Upload Progress -->
+
               <div v-if="localFile" class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-200">
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">{{ localFile.name }}</span>
@@ -435,7 +394,6 @@
               </div>
             </div>
             
-            <!-- Google Drive Picker Area -->
             <div v-if="selectedSource === 'drive' && !isGoogleDriveAuthenticated" class="mt-6 text-center">
               <button 
                 @click="authenticateGoogleDrive"
@@ -466,60 +424,58 @@
           </div>
         </div>
       </div>
-      
-      <!-- Actions -->
-      <div class="flex justify-end space-x-4">
-        <button 
-          @click="router.push('/database')" 
-          class="px-5 py-2.5 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-        >
-          Cancel
-        </button>
-        <button 
-          @click="saveVideo"
-          :disabled="!canProceed"
-          class="px-5 py-2.5 text-white bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-600 dark:hover:bg-zinc-500 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Save Video
-        </button>
-      </div>
-      
-      <!-- Notification Banner -->
-      <div 
-        v-if="notification.show" 
-        class="fixed top-4 right-4 p-4 rounded-lg shadow-lg max-w-md transition-colors duration-200"
-        :class="[
-          notification.type === 'error' 
-            ? 'bg-red-100 dark:bg-red-900/60 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200' 
-            : notification.type === 'info'
-              ? 'bg-blue-100 dark:bg-blue-900/60 border border-blue-300 dark:border-blue-800 text-blue-800 dark:text-blue-200'
-              : 'bg-green-100 dark:bg-green-900/60 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-200'
-        ]"
-      >
-        <div class="flex items-start">
-          <div class="flex-shrink-0">
-            <svg v-if="notification.type === 'error'" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-            </svg>
-            <svg v-else-if="notification.type === 'info'" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
-            </svg>
-            <svg v-else class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-            </svg>
-          </div>
-          <div class="ml-3 flex-grow">
-            <p class="text-sm font-medium">{{ notification.message }}</p>
-          </div>
-          <div class="ml-auto pl-3 flex-shrink-0">
-            <button 
-              @click="notification.show = false"
-              class="text-gray-400 hover:text-gray-500 focus:outline-none"
-            >
-              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+      -->
+        <!-- Actions -->
+        <div class="flex justify-end space-x-4">
+          <button @click="router.push('/database')"
+            class="px-5 py-2.5 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200">
+            Cancel
+          </button>
+          <button @click="saveVideo" :disabled="!canProceed"
+            class="px-5 py-2.5 text-white bg-zinc-800 hover:bg-zinc-700 dark:bg-zinc-600 dark:hover:bg-zinc-500 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            Save Video
+          </button>
+        </div>
+
+        <!-- Notification Banner -->
+        <div v-if="notification.show"
+          class="fixed top-4 right-4 p-4 rounded-lg shadow-lg max-w-md transition-colors duration-200" :class="[
+            notification.type === 'error'
+              ? 'bg-red-100 dark:bg-red-900/60 border border-red-300 dark:border-red-800 text-red-800 dark:text-red-200'
+              : notification.type === 'info'
+                ? 'bg-blue-100 dark:bg-blue-900/60 border border-blue-300 dark:border-blue-800 text-blue-800 dark:text-blue-200'
+                : 'bg-green-100 dark:bg-green-900/60 border border-green-300 dark:border-green-800 text-green-800 dark:text-green-200'
+          ]">
+          <div class="flex items-start">
+            <div class="flex-shrink-0">
+              <svg v-if="notification.type === 'error'" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd"></path>
               </svg>
-            </button>
+              <svg v-else-if="notification.type === 'info'" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z"
+                  clip-rule="evenodd"></path>
+              </svg>
+              <svg v-else class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3 flex-grow">
+              <p class="text-sm font-medium">{{ notification.message }}</p>
+            </div>
+            <div class="ml-auto pl-3 flex-shrink-0">
+              <button @click="notification.show = false" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"></path>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -531,7 +487,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import { BACKEND_URL } from '../utils/config';
+import { BACKEND_URL } from '@/utils/config';
 
 export default {
   setup() {
@@ -544,65 +500,63 @@ export default {
     const isVimeoAuthenticated = ref(false);
     const isGoogleDriveAuthenticated = ref(false);
     const isUploading = ref(false);
-    const uploadUrlReceived = ref(false);
-    const youtubeUploadUrl = ref('');
-    const isRequestingUrl = ref(false);
-    const youtubeUploadProgress = ref(0);
+    const youtubeUploadInitialized = ref(false);
     const youtubeUploadStarted = ref(false);
-    
-    // No token polling - we'll rely on the popup window interaction
-    
+    const youtubeUploadProgress = ref(0);
+    const isInitializing = ref(false);
+    const youtubeUploadUrl = ref('');
+
     const notification = ref({
       show: false,
       type: 'error',
       message: ''
     });
-    
+
     const formData = ref({
       video_url: '',
       title: '',
       video_id: '',
       video_platform: ''
     });
-    
+
     // YouTube video metadata
     const youtubeMetadata = ref({
       title: '',
       description: ''
     });
-    
+
     // UI state for JSON preview
     const showJsonPreview = ref(false);
-    
+
     const videoPreview = ref({
       id: '',
       platform: ''
     });
-    
+
     // Function to select a destination
     const selectDestination = (destination) => {
       selectedDestination.value = destination;
-      
+
       // Reset source selection when changing destination
       if (destination !== 'url') {
         selectedSource.value = 'local';
       }
     };
-    
+
     // Function to select Google Drive source
     const selectGoogleDriveSource = () => {
       selectedSource.value = 'drive';
-      
+
       // If not already authenticated, prompt for authentication
       if (!isGoogleDriveAuthenticated.value) {
         authenticateGoogleDrive();
       }
     };
-    
+
     // Function to extract video ID based on platform
     const extractVideoId = () => {
       const url = formData.value.video_url;
-      
+
       // Check for YouTube video ID
       const youtubeMatch = url.match(
         /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
@@ -613,7 +567,7 @@ export default {
         videoPreview.value = { id: youtubeMatch[1], platform: 'YouTube' };
         return;
       }
-      
+
       // Check for Vimeo video ID
       const vimeoMatch = url.match(
         /(?:https?:\/\/)?(?:www\.)?(?:vimeo\.com\/)([0-9]+)/
@@ -624,38 +578,38 @@ export default {
         videoPreview.value = { id: vimeoMatch[1], platform: 'Vimeo' };
         return;
       }
-      
+
       // Check for Bilibili video ID
       const bilibiliMatch = url.match(
         /(?:https?:\/\/)?(?:www\.)?bilibili\.com\/video\/(BV[0-9A-Za-z]+|av\d+)/
       );
       if (bilibiliMatch) {
         let videoId = bilibiliMatch[1];
-        
+
         // Check for &p=? in the URL
         const pageMatch = url.match(/[?&]p=(\d+)/);
         if (pageMatch) {
           videoId += `&p=${pageMatch[1]}`;
         }
-        
+
         formData.value.video_id = videoId;
         formData.value.video_platform = 'Bilibili';
         videoPreview.value = { id: videoId, platform: 'Bilibili' };
         return;
       }
-      
+
       // Clear fields if the URL doesn't match
       formData.value.video_id = '';
       formData.value.video_platform = '';
       videoPreview.value = { id: '', platform: '' };
     };
-    
+
     // Authentication functions
     const authenticateYouTube = async () => {
       try {
         // First check if user is already authenticated according to the backend
         const accessToken = localStorage.getItem('accessToken');
-        
+
         try {
           // Call the token check endpoint
           const tokenCheckResponse = await axios.get(
@@ -666,15 +620,15 @@ export default {
               }
             }
           );
-          
+
           // If user is already authenticated, update UI
           if (tokenCheckResponse.data && tokenCheckResponse.data.authenticated) {
             isYouTubeAuthenticated.value = true;
-            
+
             // Store token in localStorage for future use
             localStorage.setItem('youtubeAuthenticated', 'true');
             localStorage.setItem('youtubeAccessToken', tokenCheckResponse.data.accessToken);
-            
+
             showNotification('Already connected to YouTube', 'success');
             return;
           }
@@ -682,7 +636,7 @@ export default {
           console.error('Error checking YouTube token status:', tokenCheckError);
           // Continue with authentication if token check fails
         }
-        
+
         // Get authentication URL from the backend
         const response = await axios.get(
           `${BACKEND_URL}/youtube/auth`,
@@ -692,7 +646,7 @@ export default {
             }
           }
         );
-        
+
         // Check if already authenticated
         if (response.data.alreadyAuthenticated) {
           isYouTubeAuthenticated.value = true;
@@ -700,36 +654,36 @@ export default {
           showNotification('Already connected to YouTube', 'success');
           return;
         }
-        
+
         // Get the auth URL from the response
         const { authUrl } = response.data;
-        
+
         // Open the auth URL in a popup window
         const width = 800;
         const height = 700;
         const left = (window.innerWidth - width) / 2;
         const top = (window.innerHeight - height) / 2;
-        
+
         const popup = window.open(
           authUrl,
           'YouTube Authentication',
           `width=${width},height=${height},left=${left},top=${top}`
         );
-        
+
         // Show notification
         showNotification(
           'Please authorize YouTube access in the popup. The window will close automatically when complete.',
           'info',
           10000
         );
-        
+
         // Set manual authentication state - we'll have the user try the operation when ready
         const youtubeWindow = window.open(
           authUrl,
           'YouTube Authentication',
           `width=800,height=700,left=${(window.innerWidth - 800) / 2},top=${(window.innerHeight - 700) / 2}`
         );
-        
+
         // Show instructions to the user
         showNotification(
           'Please complete the authentication in the popup. When you see a success message, the window will close automatically.',
@@ -741,35 +695,35 @@ export default {
         showNotification('Failed to connect to YouTube', 'error');
       }
     };
-    
+
     // YouTube token is now automatically saved by the backend
-    
+
     const authenticateVimeo = () => {
       // This would open a popup window to authenticate with Vimeo
       showNotification('Vimeo authentication is not yet implemented', 'error');
-      
+
       // For demo purposes
       setTimeout(() => {
         isVimeoAuthenticated.value = true;
         showNotification('Connected to Vimeo successfully', 'success');
       }, 1000);
     };
-    
+
     const authenticateGoogleDrive = () => {
       // This would open a popup window to authenticate with Google Drive
       showNotification('Google Drive authentication is not yet implemented', 'error');
-      
+
       // For demo purposes
       setTimeout(() => {
         isGoogleDriveAuthenticated.value = true;
         showNotification('Connected to Google Drive successfully', 'success');
       }, 1000);
     };
-    
+
     const openGoogleDrivePicker = () => {
       // This would open the Google Drive picker
       showNotification('Selecting file from Google Drive...', 'success');
-      
+
       // For demo purposes, simulate file selection after a delay
       setTimeout(() => {
         const mockFileName = "My_Video_" + Math.floor(Math.random() * 1000) + ".mp4";
@@ -777,337 +731,24 @@ export default {
         simulateUpload({ name: mockFileName });
       }, 1500);
     };
-    
+
     // File handling functions
     const handleFileUpload = (event) => {
       const file = event.target.files[0];
-      if (file) {
-        localFile.value = file;
-        simulateUpload(file);
-      }
     };
-    
-    const simulateUpload = (file) => {
-      uploadProgress.value = 0;
-      
-      // Auto-populate YouTube metadata if we're uploading to YouTube
-      if (selectedDestination.value === 'youtube') {
-        // Set default title from filename
-        const fileName = file.name || 'Video';
-        const fileNameWithoutExt = fileName.replace(/\.[^/.]+$/, "");
-        youtubeMetadata.value.title = fileNameWithoutExt;
-        
-        // Default description
-        youtubeMetadata.value.description = `${fileNameWithoutExt}\n\nUploaded via QuantifyJiuJitsu`;
-      }
-      
-      // Simulate upload progress (this is just the local file upload progress)
-      const interval = setInterval(() => {
-        uploadProgress.value += 10;
-        
-        if (uploadProgress.value >= 100) {
-          clearInterval(interval);
-          
-          if (selectedDestination.value === 'youtube') {
-            // We'll handle actual YouTube upload in initiateYouTubeUpload
-            showNotification('File ready for YouTube upload', 'success');
-          } else if (selectedDestination.value === 'vimeo') {
-            formData.value.video_id = Math.floor(Math.random() * 900000000) + 100000000;
-            formData.value.video_platform = 'Vimeo';
-            showNotification('Video uploaded to Vimeo successfully', 'success');
-          }
-        }
-      }, 300);
-    };
-    
-    // Function to get YouTube upload URL from backend
-    const getYouTubeUploadUrl = async () => {
-      try {
-        if (!youtubeMetadata.value.title) {
-          showNotification('Please enter a title for your video', 'error');
-          return;
-        }
-        
-        // Set requesting state
-        isRequestingUrl.value = true;
-        showNotification('Preparing YouTube upload...', 'info');
-        
-        // Get the access token
-        const accessToken = localStorage.getItem('accessToken');
-        if (!accessToken) {
-          showNotification('Authentication token not found. Please sign in again.', 'error');
-          isRequestingUrl.value = false;
-          return;
-        }
-        
-        // Request upload URL from our backend
-        const response = await axios.post(
-          `${BACKEND_URL}/youtube/upload/init`,
-          {
-            snippet: {
-              title: youtubeMetadata.value.title,
-              description: youtubeMetadata.value.description || ''
-            },
-            status: {
-              privacyStatus: "unlisted"  // Default to unlisted for safety
-            }
-          },
-          {
-            headers: {
-              'Authorization': `Bearer ${accessToken}`,
-              'Content-Type': 'application/json'
-            }
-          }
-        );
-        
-        console.log('Backend response:', response.data);
-        
-        // Get upload URL from response
-        const { uploadUrl } = response.data;
-        
-        if (!uploadUrl) {
-          throw new Error('Failed to get upload URL from server');
-        }
-        
-        // Save the upload URL for later use
-        youtubeUploadUrl.value = uploadUrl;
-        uploadUrlReceived.value = true;
-        isRequestingUrl.value = false;
-        
-        console.log('Received YouTube upload URL:', uploadUrl);
-        showNotification('Ready for file upload!', 'success');
-        
-      } catch (error) {
-        console.error('Error getting YouTube upload URL:', error);
-        isRequestingUrl.value = false;
-        
-        const errorMsg = error.response?.data?.error || 
-                         error.message ||
-                         'Failed to get YouTube upload URL';
-        
-        showNotification(errorMsg, 'error');
-      }
-    };
-    
-    // Function to handle direct upload to YouTube
-    const handleYouTubeFileUpload = async (event) => {
-      try {
-        const file = event.target.files[0];
-        if (!file) {
-          showNotification('Please select a file to upload', 'error');
-          return;
-        }
-        
-        if (!youtubeUploadUrl.value) {
-          showNotification('Upload URL not found. Please start over.', 'error');
-          return;
-        }
-        
-        localFile.value = file;
-        youtubeUploadStarted.value = true;
-        youtubeUploadProgress.value = 0;
-        
-        showNotification('Starting upload to YouTube...', 'info');
-        
-        console.log('Starting direct upload to YouTube with URL:', youtubeUploadUrl.value);
-        console.log('File details:', {
-          name: file.name,
-          type: file.type,
-          size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
-        });
-        
-        // Direct upload to YouTube
-        const uploadResponse = await axios.put(
-          youtubeUploadUrl.value,
-          file,
-          {
-            headers: {
-              'Content-Type': file.type,
-              'Content-Length': file.size.toString()
-            },
-            onUploadProgress: (progressEvent) => {
-              const percent = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              console.log(`YouTube upload progress: ${percent}%`);
-              youtubeUploadProgress.value = percent;
-            }
-          }
-        );
-        
-        console.log('Upload completed! Response status:', uploadResponse.status);
-        console.log('Upload response headers:', uploadResponse.headers);
-        console.log('Upload response data:', uploadResponse.data);
-        
-        // Process the response
-        if (uploadResponse.data && uploadResponse.data.id) {
-          formData.value.video_id = uploadResponse.data.id;
-        } else {
-          // Use a placeholder ID if not available
-          formData.value.video_id = 'youtube-' + Math.random().toString(36).substring(2, 12);
-        }
-        
-        formData.value.video_platform = 'YouTube';
-        formData.value.title = youtubeMetadata.value.title;
-        
-        showNotification('Video uploaded to YouTube successfully!', 'success');
-        
-        // Notify backend of successful upload
-        try {
-          await axios.post(
-            `${BACKEND_URL}/youtube/upload/complete`,
-            {
-              videoId: formData.value.video_id,
-              title: youtubeMetadata.value.title
-            },
-            {
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                'Content-Type': 'application/json'
-              }
-            }
-          );
-        } catch (notifyError) {
-          console.error('Error notifying backend of successful upload:', notifyError);
-          // Continue anyway since the upload was successful
-        }
-        
-      } catch (error) {
-        console.error('Error uploading to YouTube:', error);
-        youtubeUploadStarted.value = false;
-        
-        const errorMsg = error.response?.data?.error?.message || 
-                         error.response?.data?.error ||
-                         error.message ||
-                         'Failed to upload video to YouTube';
-        
-        showNotification(errorMsg, 'error');
-      }
-    };
-    
-    // The old initiateYouTubeUpload function was removed and replaced by 
-    // getYouTubeUploadUrl and handleYouTubeFileUpload
-    
-    // Legacy function now renamed
-    const performLegacyYouTubeUpload = async (file) => {
-      try {
-        if (!file) {
-          showNotification('Please select a file to upload', 'error');
-          return;
-        }
-        
-        if (!youtubeUploadUrl.value) {
-          showNotification('Upload not initialized. Please try again.', 'error');
-          return;
-        }
-        
-        // Set uploading state
-        isUploading.value = true;
-        youtubeUploadStarted.value = true;
-        youtubeUploadProgress.value = 0;
-        showNotification('Uploading to YouTube...', 'info');
-        
-        // Get the access token
-        const accessToken = localStorage.getItem('youtubeAccessToken');
-        if (!accessToken) {
-          showNotification('YouTube authorization token not found. Please reconnect.', 'error');
-          isUploading.value = false;
-          return;
-        }
-        
-        // Start the file upload
-        console.log('Starting file upload to YouTube using URL:', youtubeUploadUrl.value);
-        console.log('File details:', {
-          name: file.name,
-          type: file.type,
-          size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
-        });
-        
-        try {
-          const uploadResponse = await axios.put(
-            youtubeUploadUrl.value,
-            file,
-            {
-              headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': file.type,
-                'Content-Length': file.size.toString()
-              },
-              onUploadProgress: (progressEvent) => {
-                const uploadPercentage = Math.round(
-                  (progressEvent.loaded * 100) / progressEvent.total
-                );
-                console.log(`YouTube upload progress: ${uploadPercentage}%`);
-                youtubeUploadProgress.value = uploadPercentage;
-              }
-            }
-          );
-          
-          console.log('Upload completed! Response status:', uploadResponse.status);
-          console.log('Upload response headers:', uploadResponse.headers);
-          console.log('Upload response data:', uploadResponse.data);
-          
-          // Get video ID from the response
-          if (uploadResponse.data && uploadResponse.data.id) {
-            formData.value.video_id = uploadResponse.data.id;
-            formData.value.video_platform = 'YouTube';
-            formData.value.title = youtubeMetadata.value.title;
-            
-            isUploading.value = false;
-            showNotification('Video uploaded to YouTube successfully!', 'success');
-          } else {
-            // Sometimes the video ID might not be immediately available
-            // We'll use a placeholder and let the user know it was successful
-            const tempVideoId = 'youtube-' + Math.random().toString(36).substring(2, 12);
-            formData.value.video_id = tempVideoId;
-            formData.value.video_platform = 'YouTube';
-            formData.value.title = youtubeMetadata.value.title;
-            
-            isUploading.value = false;
-            showNotification('Video uploaded to YouTube successfully! It may take some time to process.', 'success');
-          }
-        } catch (youtubeError) {
-          console.error('Error during YouTube upload:', youtubeError);
-          
-          // Handle specific YouTube API errors
-          if (youtubeError.response?.status === 401) {
-            showNotification('YouTube authorization has expired. Please reconnect your account.', 'error');
-          } else if (youtubeError.response?.status === 403) {
-            showNotification('You don\'t have permission to upload videos to this YouTube account.', 'error');
-          } else if (youtubeError.response?.status === 413) {
-            showNotification('The video file is too large for YouTube upload.', 'error');
-          } else {
-            const errorMsg = youtubeError.response?.data?.error?.message || 
-                             youtubeError.response?.data?.error?.errors?.[0]?.message ||
-                             youtubeError.message ||
-                             'Failed to upload to YouTube';
-            
-            showNotification(errorMsg, 'error');
-          }
-          
-          isUploading.value = false;
-          youtubeUploadStarted.value = false;
-        }
-      } catch (error) {
-        console.error('Error uploading to YouTube:', error);
-        isUploading.value = false;
-        youtubeUploadStarted.value = false;
-        showNotification('Failed to upload video to YouTube', 'error');
-      }
-    };
-    
+
     const saveVideo = async () => {
       try {
         if (selectedDestination.value === 'url' && (!formData.value.video_id || !formData.value.video_platform)) {
           showNotification('Please enter a valid video URL', 'error');
           return;
         }
-        
+
         if ((selectedDestination.value === 'youtube' || selectedDestination.value === 'vimeo') && uploadProgress.value < 100) {
           showNotification('Please wait for the upload to complete', 'error');
           return;
         }
-        
+
         // For YouTube uploads, if we've completed the file upload but haven't initiated the YouTube upload yet
         if (selectedDestination.value === 'youtube' && !formData.value.video_id && localFile.value && uploadProgress.value >= 100) {
           if (isYouTubeAuthenticated.value) {
@@ -1116,7 +757,7 @@ export default {
             formData.value.video_id = tempVideoId;
             formData.value.video_platform = 'YouTube';
             formData.value.title = youtubeMetadata.value.title || localFile.value.name || 'Untitled Video';
-            
+
             // You can add a warning here about the YouTube upload not being completed
             showNotification('Note: This will save the video details but won\'t upload to YouTube yet', 'info', 3000);
           } else {
@@ -1124,7 +765,7 @@ export default {
             return;
           }
         }
-        
+
         // Set default title if not provided
         if (!formData.value.title) {
           if (youtubeMetadata.value.title && selectedDestination.value === 'youtube') {
@@ -1133,9 +774,9 @@ export default {
             formData.value.title = `Video ${formData.value.video_id || 'Untitled'}`;
           }
         }
-        
+
         const accessToken = localStorage.getItem('accessToken');
-        
+
         const postData = {
           title: formData.value.title,
           video_id: formData.value.video_id,
@@ -1153,7 +794,7 @@ export default {
           language: 'English',
           notes: ''
         };
-        
+
         const response = await axios.post(
           `${BACKEND_URL}/newpost`,
           postData,
@@ -1163,11 +804,11 @@ export default {
             }
           }
         );
-        
+
         const postId = response.data.post_id;
-        
+
         showNotification('Video saved successfully!', 'success');
-        
+
         // Navigate to edit page after brief delay to show success notification
         setTimeout(() => {
           router.push(`/editpost/${postId}`);
@@ -1180,51 +821,51 @@ export default {
         );
       }
     };
-    
+
     const showNotification = (message, type = 'error', duration = 5000) => {
       notification.value = {
         show: true,
         type: type,
         message: message
       };
-      
+
       setTimeout(() => {
         notification.value.show = false;
       }, duration);
     };
-    
+
     const canProceed = computed(() => {
       // For URL destination
       if (selectedDestination.value === 'url') {
         return formData.value.video_id && formData.value.video_platform;
       }
-      
+
       // For YouTube destination with file upload
       if (selectedDestination.value === 'youtube' && isYouTubeAuthenticated.value) {
         // We can proceed if either:
         // 1. A video is uploaded and we have a video_id (from the automatic process)
         // 2. A file is selected and upload is complete (allowing manual Save)
-        return (formData.value.video_id && formData.value.video_platform === 'YouTube') || 
-               (localFile.value && uploadProgress.value >= 100);
+        return (formData.value.video_id && formData.value.video_platform === 'YouTube') ||
+          (localFile.value && uploadProgress.value >= 100);
       }
-      
+
       // For Vimeo destination
       if (selectedDestination.value === 'vimeo' && isVimeoAuthenticated.value) {
         return uploadProgress.value === 100 && formData.value.video_id;
       }
-      
+
       return false;
     });
-    
+
     onMounted(() => {
       // Check if YouTube is already authenticated
       const storedAuth = localStorage.getItem('youtubeAuthenticated');
       const storedToken = localStorage.getItem('youtubeAccessToken');
-      
+
       if (storedAuth === 'true' && storedToken) {
         console.log('Found YouTube access token in localStorage');
         isYouTubeAuthenticated.value = true;
-        
+
         // Check if we just returned from auth flow
         if (window.sessionStorage.getItem('returningFromYouTubeAuth')) {
           window.sessionStorage.removeItem('returningFromYouTubeAuth');
@@ -1232,9 +873,9 @@ export default {
         }
       }
     });
-    
+
     // No cleanup needed - we're not using intervals or timeouts
-    
+
 
     return {
       router,
@@ -1250,13 +891,6 @@ export default {
       isUploading,
       youtubeMetadata,
       notification,
-      // States for new YouTube upload flow
-      uploadUrlReceived,
-      youtubeUploadUrl,
-      isRequestingUrl,
-      youtubeUploadProgress,
-      youtubeUploadStarted,
-      // Functions
       selectDestination,
       selectGoogleDriveSource,
       extractVideoId,
@@ -1265,9 +899,6 @@ export default {
       authenticateGoogleDrive,
       openGoogleDrivePicker,
       handleFileUpload,
-      performLegacyYouTubeUpload,
-      getYouTubeUploadUrl,
-      handleYouTubeFileUpload,
       saveVideo,
       canProceed
     };

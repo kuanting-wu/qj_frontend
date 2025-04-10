@@ -1,0 +1,168 @@
+[
+  {
+    "id": "ownerName",
+    "key": "ownerName",
+    "type": "text",
+    "label": "Owner Name",
+    "placeholder": "Enter poster's name"
+  },
+  {
+    "id": "movementType",
+    "key": "movementType",
+    "type": "select",
+    "label": "Movement Type",
+    "options": [
+      { "value": "", "label": "Any" },
+      { "value": "Pass", "label": "Pass" },
+      { "value": "Sweep", "label": "Sweep" },
+      { "value": "Escape", "label": "Escape" },
+      { "value": "Transition", "label": "Transition" },
+      { "value": "Re-Guard", "label": "Re-Guard" },
+      { "value": "Submission", "label": "Submission" },
+      { "value": "Submission Escape", "label": "Submission Escape" },
+      { "value": "Takedown", "label": "Takedown" },
+      { "value": "Takedown Defense", "label": "Takedown Defense" },
+      { "value": "Guard Pull", "label": "Guard Pull" },
+      { "value": "Scramble", "label": "Scramble" }
+    ]
+  },
+  {
+    "id": "startingPosition",
+    "key": "startingPosition",
+    "type": "select",
+    "label": "Starting Position",
+    "options": [
+      { "value": "", "label": "Any" },
+      { "value": "Standing", "label": "Standing" },
+      { "value": "Closed Guard", "label": "Closed Guard" },
+      { "value": "Open Guard", "label": "Open Guard" },
+      { "value": "Half Guard", "label": "Half Guard" },
+      { "value": "Deep Half Guard", "label": "Deep Half Guard" },
+      { "value": "Side Control", "label": "Side Control" },
+      { "value": "Knee on Belly", "label": "Knee on Belly" },
+      { "value": "North-South", "label": "North-South" },
+      { "value": "Mount", "label": "Mount" },
+      { "value": "Back Control", "label": "Back Control" },
+      { "value": "Turtle", "label": "Turtle" },
+      { "value": "50/50", "label": "50/50" },
+      { "value": "Ashi Garami", "label": "Ashi Garami" },
+      { "value": "Inside Sankaku", "label": "Inside Sankaku" },
+      { "value": "Outside Sankaku", "label": "Outside Sankaku" },
+      { "value": "Saddle (411)", "label": "Saddle (411)" },
+      { "value": "X-Guard", "label": "X-Guard" },
+      { "value": "Single Leg X", "label": "Single Leg X" },
+      { "value": "De La Riva", "label": "De La Riva" },
+      { "value": "Reverse De La Riva", "label": "Reverse De La Riva" },
+      { "value": "K-Guard", "label": "K-Guard" }
+    ]
+  },
+  {
+    "id": "startingTopBottom",
+    "key": "startingTopBottom",
+    "type": "select",
+    "label": "Starting Position Type",
+    "options": [
+      { "value": "", "label": "Any" },
+      { "value": "TOP", "label": "Top" },
+      { "value": "BOTTOM", "label": "Bottom" },
+      { "value": "NEUTRAL", "label": "Neutral" }
+    ]
+  },
+  {
+    "id": "endingPosition",
+    "key": "endingPosition",
+    "type": "select",
+    "label": "Ending Position",
+    "options": [
+      { "value": "", "label": "Any" },
+      { "value": "Standing", "label": "Standing" },
+      { "value": "Closed Guard", "label": "Closed Guard" },
+      { "value": "Open Guard", "label": "Open Guard" },
+      { "value": "Half Guard", "label": "Half Guard" },
+      { "value": "Deep Half Guard", "label": "Deep Half Guard" },
+      { "value": "Side Control", "label": "Side Control" },
+      { "value": "Knee on Belly", "label": "Knee on Belly" },
+      { "value": "North-South", "label": "North-South" },
+      { "value": "Mount", "label": "Mount" },
+      { "value": "Back Control", "label": "Back Control" },
+      { "value": "Turtle", "label": "Turtle" },
+      { "value": "Submission Finish", "label": "Submission Finish" },
+      { "value": "50/50", "label": "50/50" },
+      { "value": "Ashi Garami", "label": "Ashi Garami" },
+      { "value": "Inside Sankaku", "label": "Inside Sankaku" },
+      { "value": "Outside Sankaku", "label": "Outside Sankaku" },
+      { "value": "Saddle (411)", "label": "Saddle (411)" },
+      { "value": "X-Guard", "label": "X-Guard" },
+      { "value": "Single Leg X", "label": "Single Leg X" },
+      { "value": "De La Riva", "label": "De La Riva" },
+      { "value": "Reverse De La Riva", "label": "Reverse De La Riva" },
+      { "value": "K-Guard", "label": "K-Guard" }
+    ]
+  },
+  {
+    "id": "endingTopBottom",
+    "key": "endingTopBottom",
+    "type": "select",
+    "label": "Ending Position Type",
+    "options": [
+      { "value": "", "label": "Any" },
+      { "value": "TOP", "label": "Top" },
+      { "value": "BOTTOM", "label": "Bottom" },
+      { "value": "NEUTRAL", "label": "Neutral" }
+    ]
+  },
+  {
+    "id": "giNogi",
+    "key": "giNogi",
+    "type": "select",
+    "label": "Gi / No-Gi",
+    "options": [
+      { "value": "", "label": "Any" },
+      { "value": "Gi", "label": "Gi" },
+      { "value": "No-Gi", "label": "No-Gi" },
+      { "value": "Both", "label": "Both" }
+    ]
+  },
+  {
+    "id": "practitioner",
+    "key": "practitioner",
+    "type": "text",
+    "label": "Practitioner / Instructor",
+    "placeholder": "Search by practitioner name"
+  },
+  {
+    "id": "publicStatus",
+    "key": "publicStatus",
+    "type": "select",
+    "label": "Public Status",
+    "options": [
+      { "value": "", "label": "Any" },
+      { "value": "public", "label": "Public" },
+      { "value": "subscribers", "label": "Subscribers Only" },
+      { "value": "private", "label": "Private" }
+    ]
+  },
+  {
+    "id": "language",
+    "key": "language",
+    "type": "select",
+    "label": "Language",
+    "options": [
+      { "value": "", "label": "Any" },
+      { "value": "English", "label": "English" },
+      { "value": "Japanese", "label": "Japanese" },
+      { "value": "Traditional Chinese", "label": "Traditional Chinese" }
+    ]
+  },
+  {
+    "id": "sortOption",
+    "key": "sortOption",
+    "type": "select",
+    "label": "Sort By",
+    "options": [
+      { "value": "newToOld", "label": "New to Old" },
+      { "value": "oldToNew", "label": "Old to New" }
+    ],
+    "onChange": true
+  }
+]

@@ -51,7 +51,7 @@
 <script>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { BACKEND_URL } from '../utils/config';
+import { BACKEND_URL } from '@/utils/config';
 
 export default {
   setup() {

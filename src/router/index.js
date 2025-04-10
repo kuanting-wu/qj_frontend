@@ -1,21 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Welcome from '../components/Welcome.vue'
-import SignIn from '../components/SignIn.vue'
-import SignUp from '../components/SignUp.vue'
-import Terms from '../components/Terms.vue'
-import VerifyEmail from '../components/VerifyEmail.vue'
-import ForgotPassword from '../components/ForgotPassword.vue'
-import ResetPassword from '../components/ResetPassword.vue'
-import Documents from '../components/Documents.vue'
-import Database from '../components/Database.vue'
-import GamePlan from '../components/GamePlan.vue'
-import Profile from '../components/Profile.vue'
-import EditProfile from '../components/EditProfile.vue'
-import NewPage from '../components/NewPage.vue'
-import EditPage from '../components/EditPage.vue'
-import ViewPage from '../components/ViewPage.vue'
-import PrivacyPolicy from '../components/PrivacyPolicy.vue'
-import YouTubeCallback from '../components/YouTubeCallback.vue'
+import Welcome from '../pages/Welcome.vue'
+import SignIn from '../pages/auth/SignIn.vue'
+import SignUp from '../pages/auth/SignUp.vue'
+import Terms from '../pages/terms/Terms.vue'
+import VerifyEmail from '../pages/auth/VerifyEmail.vue'
+import ForgotPassword from '../pages/auth/ForgotPassword.vue'
+import ResetPassword from '../pages/auth/ResetPassword.vue'
+import Documents from '../pages/documents/Documents.vue'
+import PostFinder from '../pages/postfinder/PostFinder.vue'
+import GameFinder from '../pages/gamefinder/GameFinder.vue'
+import ViewGamePlan from '../pages/gameplan/ViewGamePlan.vue'
+import ViewProfile from '../pages/profile/ViewProfile.vue'
+import EditProfile from '../pages/profile/EditProfile.vue'
+import NewPost from '../pages/post/NewPost.vue'
+import EditPost from '../pages/post/EditPost.vue'
+import ViewPost from '../pages/post/ViewPost.vue'
+import PrivacyPolicy from '../pages/privacypolicy/PrivacyPolicy.vue'
+import YouTubeCallback from '../components/content/YouTubeCallback.vue'
 import { isTokenValid } from '../utils/auth'
 import { refreshAccessToken } from '../utils/auth'
 
@@ -29,14 +30,15 @@ const routes = [
   { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword, props: true},
   { path: '/reset-password', name: 'ResetPassword', component: ResetPassword, props: true},
   { path: '/docs', name: 'Documents', component: Documents },
-  { path: '/database', name: 'Database', component: Database, meta: { requiresAuth: true } },
-  { path: '/gameplan', name: 'GamePlan', component: GamePlan, meta: { requiresAuth: true } },
-  { path: '/viewprofile/:userName', name: 'Profile', component: Profile, props: true, meta: { requiresAuth: true } },
+  { path: '/postfinder', name: 'PostFinder', component: PostFinder, props: true, meta: { requiresAuth: false } },
+  { path: '/gamefinder', name: 'GameFinder', component: GameFinder, props: true, meta: { requiresAuth: false } },
+  { path: '/viewgameplan/:id', name: 'ViewGamePlan', component: ViewGamePlan, props: true, meta: { requiresAuth: false } },
+  { path: '/viewprofile/:userName', name: 'ViewProfile', component: ViewProfile, props: true, meta: { requiresAuth: false } },
   { path: '/editprofile/:userName', name: 'EditProfile', component: EditProfile, props: true, meta: { requiresAuth: true } },
-  { path: '/newpost', name: 'NewPage', component: NewPage, meta: { requiresAuth: true } },
-  { path: '/editpost/:postId', name: 'EditPage', component: EditPage, props: true, meta: { requiresAuth: true } },
-  { path: '/viewpost/:postId', name: 'ViewPage', component: ViewPage, props: true, meta: { requiresAuth: false } },
-  { path: '/auth/youtube/callback', name: 'YouTubeCallback', component: YouTubeCallback, meta: { requiresAuth: true } }
+  { path: '/newpost', name: 'NewPost', component: NewPost, meta: { requiresAuth: true } },
+  { path: '/editpost/:id', name: 'EditPost', component: EditPost, props: true, meta: { requiresAuth: true } },
+  { path: '/viewpost/:id', name: 'ViewPost', component: ViewPost, props: true, meta: { requiresAuth: false } },
+  { path: '/auth/youtube/callback', name: 'YouTubeCallback', component: YouTubeCallback, meta: { requiresAuth: false } }
 ]
 
 const router = createRouter({

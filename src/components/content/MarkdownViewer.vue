@@ -18,10 +18,29 @@ import { ref, computed, watch } from 'vue';
 import axios from 'axios';
 import { marked } from 'marked';
 
+// Define this in your config or .env file (e.g., import from '@/utils/config')
+const MARKDOWN_BUCKET = process.env.VUE_APP_MARKDOWN_BUCKET || 'qj-markdown-notes'; // Example bucket name
+
+// Get a URL for a markdown file (direct S3 URL in this case)
+const getMarkdownUrl = async (key) => {
+  if (!key) {
+    throw new Error('No file key provided');
+  }
+
+  try {
+    // Construct the full S3 URL
+    const s3Url = `https://${MARKDOWN_BUCKET}.s3.amazonaws.com/${key}`;
+    return s3Url;
+  } catch (error) {
+    console.error('Error generating markdown URL:', error);
+    throw new Error(`Failed to get markdown URL: ${error.message}`);
+  }
+};
+
 export default {
   name: 'MarkdownViewer',
   props: {
-    markdownUrl: {
+    notesPath: {
       type: String,
       required: false,
       default: ''
@@ -32,7 +51,6 @@ export default {
     const loading = ref(false);
     const error = ref('');
 
-    // Parse markdown to HTML
     const renderedMarkdown = computed(() => {
       if (!markdownContent.value) return '';
       try {
@@ -43,9 +61,8 @@ export default {
       }
     });
 
-    // Fetch markdown from S3 when URL changes
     const fetchMarkdown = async () => {
-      if (!props.markdownUrl) {
+      if (!props.notesPath) {
         markdownContent.value = '';
         return;
       }
@@ -54,9 +71,13 @@ export default {
       error.value = '';
 
       try {
-        // Add cache buster to prevent browser caching
-        const urlWithCacheBuster = `${props.markdownUrl}?t=${new Date().getTime()}`;
-        const response = await axios.get(urlWithCacheBuster);
+        // Get the S3 URL for the markdown file
+        const markdownUrl = await getMarkdownUrl(props.notesPath);
+        
+        // Fetch the markdown content from the S3 URL
+        const response = await axios.get(markdownUrl, {
+          params: { t: new Date().getTime() } // Cache buster
+        });
         markdownContent.value = response.data;
       } catch (err) {
         console.error('Error fetching markdown:', err);
@@ -67,9 +88,8 @@ export default {
       }
     };
 
-    // Watch for changes to the markdown URL
-    watch(() => props.markdownUrl, (newUrl) => {
-      if (newUrl) {
+    watch(() => props.notesPath, (newPath) => {
+      if (newPath) {
         fetchMarkdown();
       } else {
         markdownContent.value = '';
@@ -151,3 +171,4 @@ export default {
   @apply max-w-full h-auto my-4;
 }
 </style>
+
